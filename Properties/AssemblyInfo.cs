@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,16 +9,16 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Setup")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Premier Tech")]
+[assembly: AssemblyCompany("MFHB")]
 [assembly: AssemblyProduct("Setup")]
-[assembly: AssemblyCopyright("Copyright © Premier Tech 2024")]
+[assembly: AssemblyCopyright("Copyright © MFHB 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("8468263b-ee67-4e48-a1d4-a482bdd8d246")]
@@ -32,5 +33,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("24.05.03.2")]
-[assembly: AssemblyFileVersion("24.05.03.2")]
+[assembly: AssemblyVersion("24.05.03.3")]
+[assembly: AssemblyFileVersion("24.05.03.3")]
+[assembly: NeutralResourcesLanguage("en-CA")]

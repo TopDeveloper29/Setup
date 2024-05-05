@@ -8,13 +8,18 @@ namespace Setup
 {
     public class Program
     {
+        // Main entry point of application
         [STAThread]
         public static void Main(string[] Args)
         {
+            // Handle asembly resolving to alow application run withoud dll next to it
             AppDomain.CurrentDomain.AssemblyResolve += OnResolveAssembly;
+
+            // Run the real Main function in App.cs
             App.Main(Args);
         }
 
+        // Event hanlder to resolve DLL path
         private static Assembly OnResolveAssembly(object sender, ResolveEventArgs args)
         {
             var executingAssembly = Assembly.GetExecutingAssembly();

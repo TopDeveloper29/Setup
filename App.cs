@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Setup.Forms;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,20 +8,66 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Setup
 {
     public static class App
     {
+        // Hold if setup.exe extract some temporary file that need to be clean on close
+        public static bool CleanUpRequired { get; set; } = false; 
+        
+        // List of args fill in initialization to pass on app rehost as admin
+        public static string AppArgs {  get; private set; }
+
+        // The real Main function call in Program.cs
         [STAThread]
         public static void Main(string[] Args)
         {
             int Index = 0;
             bool Quiet = false;
+            string[]InstallArgs = null;
+            
+            // Process each arguments
             foreach (string arg in Args)
             {
+                // Save args for further rehost
+                AppArgs += $"{arg} ";
+
+                // Handle args
                 switch (arg.ToLower())
                 {
+                    // Select another config file for setup
+                    case "config":
+                    case "/config":
+                    case "-config":
+                    case "/c":
+                    case "-c":
+                        try
+                        {
+                            if (File.Exists(Args[Index + 1]))
+                            {
+                                SettingsManager.Load(Args[Index + 1]);
+                            }
+                            else { throw new Exception("File Not Found"); }
+                        }
+                        catch
+                        {
+                            MessageBox.Show($"You must provide a valid file path next to {arg}", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        break;
+
+                    // Toogle quiet mode for setup
+                    case "quiet":
+                    case "/quiet":
+                    case "-quiet":
+                    case "/q":
+                    case "-q":
+                        Quiet = true;
+                        break;
+
+
+                    // Package a self executable setup from a config file
                     case "setup":
                     case "-setup":
                     case "/setup":
@@ -30,7 +77,7 @@ namespace Setup
                         {
                             if (File.Exists(Args[Index + 1]))
                             {
-                                PackageManager.NewExe(Args[Index + 1]);
+                                PackageManager.NewSelfExe(Args[Index + 1]);
                             }
                             else { throw new Exception("Folder Not Found"); }
                         }
@@ -41,6 +88,7 @@ namespace Setup
                         Environment.Exit(0);
                         break;
                     
+                    // Create a compressed bin file from a folder
                     case "newbin":
                     case "/newbin":
                     case "-newbin":
@@ -61,25 +109,7 @@ namespace Setup
                         Environment.Exit(0);
                         break;
 
-                    case "config":
-                    case "/config":
-                    case "-config":
-                    case "/c":
-                    case "-c":
-                        try
-                        {
-                            if (File.Exists(Args[Index + 1]))
-                            {
-                                SettingsManager.Load(Args[Index + 1]);
-                            }
-                            else { throw new Exception("File Not Found"); }
-                        }
-                        catch
-                        {
-                            MessageBox.Show($"You must provide a valid file path next to {arg}", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        break;
-                    
+                    // Create a sample json file
                     case "json":
                     case "/json":
                     case "-json":
@@ -88,43 +118,59 @@ namespace Setup
                         SettingsManager.CreateSample();
                         Environment.Exit(0);
                         break;
-
-                    case "quiet":
-                    case "/quiet":
-                    case "-quiet":
-                    case "/q":
-                    case "-q":
-                        Quiet = true;
+                   
+                    // Run application in packager mode
+                    case "packager":
+                    case "/packager":
+                    case "-packager":
+                    case "/p":
+                    case "-p":
+                        // Always rehost the pacakager as admin because it may require to load file form setup.exe and othe stuff
+                        if (!SetupManager.IsUserAdministrator())
+                        {
+                            Process proc = new Process
+                            {
+                                StartInfo = new ProcessStartInfo()
+                                {
+                                    UseShellExecute = true,
+                                    WorkingDirectory = Environment.CurrentDirectory,
+                                    FileName = Process.GetCurrentProcess().MainModule.FileName,
+                                    Arguments = App.AppArgs,
+                                    Verb = "runas"
+                                }
+                            };
+                            proc.Start();
+                            Environment.Exit(0);
+                        }
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        Application.Run(new PackagerForm());
                         break;
                     
-                    default:
+                    // Used only for rehost to admin
+                    case "/install":
+                        try
+                        {
+                            InstallArgs = Args[Index + 1].Split(',');
+                            if (InstallArgs.Length < 2)
+                            {
+                                throw new Exception("Invalid Args");
+                            }
+                        }
+                        catch
+                        {
+                            MessageBox.Show($"You must provide a list of argument for install", "Args not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Environment.Exit(0);
+                        }
+                        break;
+
+                    // Afficher un message d'aide
                     case "help":
                     case "/help":
                     case "-help":
                     case "/?":
                     case "-?":
-                        MessageBox.Show("This is availaible command line to run or create package for setup.exe\n\n" +
-                            
-                            "*Note each argument as multiple variation for conveniance.\n" +
-                            " Example: Quiet will also work with this\n" +
-                            " -Quiet /Quiet -Q /Q\n\n" +
-
-                            "=== Setup Option ===\n" +
-
-                            "Quiet : Run Setup.exe silently without UI, note you can configure setup using config.json file\n\n" +
-
-                            "Config [Config Path] : this alow to specify a config file by default app look for config.json.\n\n" +
-                            
-                            "=== Packaging Option ===\n" +
-                            "The best way to proceed is first generate a bin file or create a \"data\" folder next to setup.exe then generate a new config.json and finaly create a self executable setup.exe\n\n" +
-
-                            "NewBin [Folder Path] : This allow to package a folder to a compressed bin file that can be use as data source for setup.\n\n" +
-
-                            "Json : This will create a new config.json holding all property that could be configure in setup. Note none of them are mandatory\n\n" +
-
-                            "Setup [Config Path] : This allow you to create a setup.exe that will hold both config and data, you must specify path to a valid config.json that the datasource is set to a .bin file.\n\n"
-
-                        , "Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Process.Start("https://github.com/TopDeveloper29/Setup/blob/master/README.md");
                         Environment.Exit(0);
                         break;
                 }
@@ -135,6 +181,22 @@ namespace Setup
             string ExeBin = File.ReadAllText(Assembly.GetExecutingAssembly().Location);
             if (ExeBin != null && ExeBin.Contains("!pkg|START|pkg!") && ExeBin.Contains("!pkg|END|pkg!"))
             {
+                if (!SetupManager.IsUserAdministrator())
+                {
+                    Process proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            UseShellExecute = true,
+                            WorkingDirectory = Environment.CurrentDirectory,
+                            FileName = Process.GetCurrentProcess().MainModule.FileName,
+                            Arguments = AppArgs,
+                            Verb = "runas"
+                        }
+                    };
+                    proc.Start();
+                    return;
+                }
                 // if yes extract data of it
                 try
                 {
@@ -142,13 +204,17 @@ namespace Setup
                     string EmbedPackageBin = ExeBin.Split(new string[] { "!pkg|START|pkg!" }, StringSplitOptions.None)[1].Split(new string[] { "!pkg|END|pkg!" }, StringSplitOptions.None)[0];
 
                     // get file name and separate flag with it to get bin of cfg
-                    SetupManager.SetupCfgName = EmbedPackageBin.Split(new string[] { "!cfg|" }, StringSplitOptions.None)[1].Split(new string[] { "|cfg!" }, StringSplitOptions.None)[0];
-                    PackageManager.BytesToFile(EmbedPackageBin.Split(new string[] { $"!cfg|{SetupManager.SetupCfgName}|cfg!" }, StringSplitOptions.None)[1].Split(new string[] { "!cfg|END|cfg!" }, StringSplitOptions.None)[0], SetupManager.SetupCfgName);
-                    
+                    string SetupCfgName = EmbedPackageBin.Split(new string[] { "!cfg|" }, StringSplitOptions.None)[1].Split(new string[] { "|cfg!" }, StringSplitOptions.None)[0];
+                    string json = PackageManager.Base64ToString(EmbedPackageBin.Split(new string[] { $"!cfg|{SetupCfgName}|cfg!" }, StringSplitOptions.None)[1].Split(new string[] { "!cfg|END|cfg!" }, StringSplitOptions.None)[0]);
+                    SettingsManager.LoadFromJson(json);
+
                     // get file name and separate flag with it to get bin of .bin
-                    SetupManager.SetupBinName = EmbedPackageBin.Split(new string[] { "!bin|" }, StringSplitOptions.None)[1].Split(new string[] { "|bin!" }, StringSplitOptions.None)[0];
-                    SetupManager.SetupBin = EmbedPackageBin.Split(new string[] { $"!bin|{SetupManager.SetupBinName}|bin!" }, StringSplitOptions.None)[1].Split(new string[] { "!bin|END|bin!" }, StringSplitOptions.None)[0];
-                    PackageManager.BytesToFile(SetupManager.SetupBin, SetupManager.SetupBinName);
+                    if (EmbedPackageBin.Contains("!bin|END|bin!"))
+                    {
+                        CleanUpRequired = true;
+                        SetupManager.SetupBinName = EmbedPackageBin.Split(new string[] { "!bin|" }, StringSplitOptions.None)[1].Split(new string[] { "|bin!" }, StringSplitOptions.None)[0];
+                        PackageManager.Base64toFile(EmbedPackageBin.Split(new string[] { $"!bin|{SetupManager.SetupBinName}|bin!" }, StringSplitOptions.None)[1].Split(new string[] { "!bin|END|bin!" }, StringSplitOptions.None)[0], SetupManager.SetupBinName);
+                    }
                     Thread.Sleep(1500);
                 }
                 catch(Exception ex)
@@ -157,27 +223,44 @@ namespace Setup
                 }
             }
 
+            // Load default setting (if already load it skip it)
             SettingsManager.Load();
+
+            // If argument quiet is pass run install without lauch the UI
             if (Quiet)
             {
                 string InstallPath = string.Empty;
-                if (string.IsNullOrWhiteSpace(SettingsManager.CurrentSetting.Path))
+                
+                // If a path is not specify in config find the default path depending of architecture
+                if (string.IsNullOrWhiteSpace(SettingsManager.Current.Path))
                 {
-                    InstallPath = SettingsManager.FindDefaultPath(SettingsManager.CurrentSetting.Architecture, SettingsManager.CurrentSetting.Name, SettingsManager.CurrentSetting.Publisher);
+                    InstallPath = SettingsManager.FindDefaultPath(SettingsManager.Current.Architecture, SettingsManager.Current.Name, SettingsManager.Current.Publisher);
                 }
                 else
                 {
-                    InstallPath = SettingsManager.CurrentSetting.Path;
+                    InstallPath = SettingsManager.Current.Path;
                 }
 
-                SetupManager.Install(InstallPath,SettingsManager.CurrentSetting.DesktopCheckBox.Checked, SettingsManager.CurrentSetting.StartMenuCheckBox.Checked, SettingsManager.CurrentSetting.StartUpCheckBox.Checked);
+                // Launch Istall using setting apply by config
+                SetupManager.Install(InstallPath,SettingsManager.Current.DesktopCheckBox.Checked, SettingsManager.Current.StartMenuCheckBox.Checked, SettingsManager.Current.StartUpCheckBox.Checked);
                 Environment.Exit(0);
             }
             else
             {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new SetupForm());
+                // If application as not be runned with /install run it normaly else just perform install (grab param from non admin UI)
+                if (InstallArgs == null)
+                {
+                    // Open setup normaly
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new SetupForm());
+                }
+                else
+                {
+                    // If user was not admin in UI it rehost application at install time and pass argument /install "Path,Desktop,StartMenu,StartUp"
+                    SetupManager.Install(InstallArgs[0], bool.Parse(InstallArgs[1]), bool.Parse(InstallArgs[2]), bool.Parse(InstallArgs[3]));
+                    Environment.Exit(0);
+                }
             }
         }
     }
