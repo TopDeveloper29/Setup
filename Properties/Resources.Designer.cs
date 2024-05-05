@@ -61,6 +61,15 @@ namespace Setup.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à SampleValue.
+        /// </summary>
+        internal static string Base64Uninstall {
+            get {
+                return ResourceManager.GetString("Base64Uninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
         internal static System.Drawing.Icon setup {

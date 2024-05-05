@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\PackageManager.cs" />
+    <Compile Include="Class\UninstallManager.cs" />
     <Compile Include="Forms\PackagerForm.cs">
       <SubType>Form</SubType>
     </Compile>

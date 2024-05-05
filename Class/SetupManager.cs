@@ -1,5 +1,6 @@
 ﻿using IWshRuntimeLibrary;
 using Microsoft.Win32;
+using Setup.Class;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -15,6 +16,7 @@ namespace Setup
     {
         // Hold the name of the temporay extracted file to read it later or delete it at close
         public static string SetupBinName { get; set; }
+
         // Create a shortcut in windows
         public static void AddShortcut(string shortcutLocation, string pathToExe, string IconPath = null)
         {
@@ -46,14 +48,11 @@ namespace Setup
                 WindowsPrincipal principal = new WindowsPrincipal(user);
                 isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
-            catch (UnauthorizedAccessException ex)
+            catch
             {
                 isAdmin = false;
             }
-            catch (Exception ex)
-            {
-                isAdmin = false;
-            }
+
             return isAdmin;
         }
         
@@ -103,13 +102,10 @@ namespace Setup
             string programDataStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu) + "\\Programs";
             string publiclnkpath = $@"{publicDesktopPath}\{SettingsManager.Current.Name}.lnk";
             string programlnkpath = $@"{programDataStartMenuPath}\{SettingsManager.Current.Name}.lnk";
-            string AditionalUninstall = string.Empty;
             string AppIconPath = null;
-
-            // Handle any aditional string to uninstall
-            if (Desktop) { AditionalUninstall += $"&& del /F \"{publiclnkpath}\""; }
-            if (StartMenu) { AditionalUninstall += $" && del /F \"{programlnkpath}\""; }
-            if (StartUp) { AditionalUninstall += $" && \"C:\\WINDOWS\\system32\\reg.exe\" DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"{SettingsManager.Current.Name}\" /f"; }
+            string UninstallerName = "Uninstall.exe";
+            string CurrentPath = ParsePath(@".\Uninstall.exe");
+            string UninstallerPath = $@"{Path}\{UninstallerName}";
 
             // Create directory
             try
@@ -164,7 +160,7 @@ namespace Setup
                         key.SetValue("InstallDate", DateTime.Now.ToString("yyyyMMdd"));
                         key.SetValue("NoModify", 1);
                         key.SetValue("NoRepair", 1);
-                        key.SetValue("UninstallString", $"C:\\WINDOWS\\system32\\cmd.exe /C RMDIR /S /Q \"{Path}\" && \"C:\\WINDOWS\\system32\\reg.exe\" DELETE \"HKEY_LOCAL_MACHINE\\{Reg3264}{SettingsManager.Current.Name}\" /f {AditionalUninstall}");
+                        key.SetValue("UninstallString", $"{UninstallerPath}");
                     }
                     finally
                     {
@@ -193,6 +189,27 @@ namespace Setup
             }
             catch
             { MessageBox.Show("Fail to copy application file", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
+            // Create the unistaller with good information
+            try
+            {
+                // Poupulate the unistall information object with good information
+                UninstallManager.Load(SettingsManager.Current.Name, Path, publicDesktopPath, programlnkpath, StartUp, SettingsManager.Current.Architecture, SettingsManager.Current.RegistryKeys);
+                // Create the unistaller
+                PackageManager.Base64toFile(Properties.Resources.Base64Uninstall, UninstallerName);
+                System.IO.File.Move(CurrentPath, UninstallerPath);
+
+                // Populate the installer with information in base64
+                string Output = string.Empty;
+                Output += "\n!json|START|json!\n";
+                Output += UninstallManager.ToBase64();
+                Output += "\n!json|END|json!";
+                System.IO.File.AppendAllText(UninstallerPath, Output);
+            }
+            catch
+            {
+                MessageBox.Show("Fail to create and copy application uninstaller", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             try
             {

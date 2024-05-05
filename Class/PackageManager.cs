@@ -15,7 +15,7 @@ namespace Setup
     internal static class PackageManager
     {
         // using Vestris.ResourceLib edit the RC_ICON of a givent setup by a new icon file
-        public static void ChangeIcon(string NewExePath, string TempIconPath)
+        public static void ChangeIcon(string NewExePath, string TempIconPath, int TryCount = 0)
         {
             try
             {
@@ -26,7 +26,17 @@ namespace Setup
                     iconDirectoryResource.SaveTo(NewExePath);
             }
             catch
-            { Thread.Sleep(1500); ChangeIcon(NewExePath, TempIconPath); }
+            {
+                if (TryCount < 2)
+                {
+                    Thread.Sleep(1500);
+                    ChangeIcon(NewExePath, TempIconPath, TryCount + 1);
+                }
+                else
+                {
+                    MessageBox.Show($"Could not write icon in {NewExePath} try create setup again", "Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                }
+            }
         }
 
         #region Base64 Setup.exe processing
@@ -44,7 +54,7 @@ namespace Setup
             string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name);
             byte[] fileBytes = Convert.FromBase64String(bytes);
             File.WriteAllBytes(fullPath, fileBytes);
-            if (!fullPath.ToLower().Contains("temp.json"))
+            if (!fullPath.ToLower().Contains("temp.json") && !fullPath.ToLower().Contains("uninstall.exe"))
             {
                 File.SetAttributes(fullPath, File.GetAttributes(fullPath) | FileAttributes.Hidden);
             }

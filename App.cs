@@ -164,6 +164,19 @@ namespace Setup
                         }
                         break;
 
+                    // Used for developement purpose to get Unistall.exe as base64
+                    case "/utb64":
+                        try
+                        {
+                            if (File.Exists(Args[Index + 1]))
+                            {
+                                Clipboard.SetText(PackageManager.FileToBase64(Args[Index + 1]));
+                                Environment.Exit(0);
+                            }
+                        }
+                        catch { MessageBox.Show("Provide a valid path to uninstall.exe next to /utb64 argument", "Intended to developer only", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+                        break;
+
                     // Afficher un message d'aide
                     case "help":
                     case "/help":

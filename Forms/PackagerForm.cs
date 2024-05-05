@@ -17,7 +17,7 @@ namespace Setup.Forms
 {
     public partial class PackagerForm : MaterialForm
     {
-        private MaterialSkinManager materialSkinManager;
+        private readonly MaterialSkinManager materialSkinManager;
         // Hold if Packager create temporary file that required a clean-up at close
         public bool DataCleanRequired = false;
         public PackagerForm()
@@ -116,35 +116,34 @@ namespace Setup.Forms
         // Update the Current setting object and json file
         public void SaveConfig()
         {
-            SettingsManager.Current = new Setting();
+            SettingsManager.Current = new Setting
+            {
+                Name = AppName.Text,
+                Version = AppVersion.Text,
+                Publisher = AppPublisher.Text,
+                ExecutableName = ExecutableName.Text,
+                PathIsEditable = DefaultPath_Editable.Checked,
+                DesktopCheckBox = new CheckBoxConfig
+                {
+                    Visible = Desktop_Visible.Checked,
+                    Enable = Desktop_Enable.Checked,
+                    Checked = Desktop_Checked.Checked
+                },
+                StartMenuCheckBox = new CheckBoxConfig
+                {
+                    Visible = StartMenu_Visible.Checked,
+                    Enable = StartMenu_Enable.Checked,
+                    Checked = StartMenu_Checked.Checked
+                },
+                StartUpCheckBox = new CheckBoxConfig
+                {
+                    Visible = StartUp_Visible.Checked,
+                    Enable = StartUp_Enable.Checked,
+                    Checked = StartUp_Checked.Checked
+                },
+                DataSource = AppPath.Text
+            };
 
-            // Common information
-            SettingsManager.Current.Name = AppName.Text;
-            SettingsManager.Current.Version = AppVersion.Text;
-            SettingsManager.Current.Publisher = AppPublisher.Text;
-            SettingsManager.Current.ExecutableName = ExecutableName.Text;
-            SettingsManager.Current.PathIsEditable = DefaultPath_Editable.Checked;
-
-            // Desktop
-            SettingsManager.Current.DesktopCheckBox = new CheckBoxConfig();
-            SettingsManager.Current.DesktopCheckBox.Visible = Desktop_Visible.Checked;
-            SettingsManager.Current.DesktopCheckBox.Enable = Desktop_Enable.Checked;
-            SettingsManager.Current.DesktopCheckBox.Checked = Desktop_Checked.Checked;
-
-            // Start-Menu
-            SettingsManager.Current.StartMenuCheckBox = new CheckBoxConfig();
-            SettingsManager.Current.StartMenuCheckBox.Visible = StartMenu_Visible.Checked;
-            SettingsManager.Current.StartMenuCheckBox.Enable = StartMenu_Enable.Checked;
-            SettingsManager.Current.StartMenuCheckBox.Checked = StartMenu_Checked.Checked;
-
-            // Start-Up
-            SettingsManager.Current.StartUpCheckBox = new CheckBoxConfig();
-            SettingsManager.Current.StartUpCheckBox.Visible = StartUp_Visible.Checked;
-            SettingsManager.Current.StartUpCheckBox.Enable = StartUp_Enable.Checked;
-            SettingsManager.Current.StartUpCheckBox.Checked = StartUp_Checked.Checked;
-
-            // Temporary Data Source (it set on export to real one) it basicly only to know the good path
-            SettingsManager.Current.DataSource = AppPath.Text;
 
             // Architecture
             switch (Architechture.Text.ToLower())
@@ -191,8 +190,7 @@ namespace Setup.Forms
                 {
                     if (!Item.IsNewRow)
                     {
-                        RegType Type = RegType.HKLM;
-                        Enum.TryParse(Item.Cells[0].Value?.ToString() ?? "HKLM",out Type);
+                        Enum.TryParse(Item.Cells[0].Value?.ToString() ?? "HKLM",out RegType Type);
                         string Path = Item.Cells[1].Value?.ToString() ?? string.Empty;
                         string Name = Item.Cells[2].Value?.ToString() ?? string.Empty;
                         string Value = Item.Cells[3].Value?.ToString() ?? string.Empty;
