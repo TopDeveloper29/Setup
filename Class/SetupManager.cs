@@ -105,22 +105,19 @@ namespace Setup
             string AppIconPath = null;
             string UninstallerName = "Uninstall.exe";
             string CurrentPath = ParsePath(@".\Uninstall.exe");
-            string UninstallerPath = $@"{Path}\{UninstallerName}";
-
-            // Create directory
-            try
+            string RootUinstallDir = $@"{Path}\Uninstall";
+            string UninstallerPath = $@"{RootUinstallDir}\{UninstallerName}";
+            
+            // Populate icon path if aplicable
+            if (SettingsManager.Current.Icon.Contains(".bin"))
             {
-                if (Directory.Exists(Path))
-                {
-                    Directory.Delete(Path, true);
-                    Directory.CreateDirectory(Path);
-                }
-                else
-                { Directory.CreateDirectory(Path); }
+                AppIconPath = $@"{Path}\{SettingsManager.Current.Icon.Split(new string[] { ".bin" }, StringSplitOptions.None)[1]}";
             }
-            catch
-            { MessageBox.Show("Fail to create installation directory", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-
+            else
+            {
+                AppIconPath = $@"{Path}\{ParsePath(SettingsManager.Current.Icon).Split(new string[] { @"\" }, StringSplitOptions.None).Last()}";
+            }
+            
             // Register application
             try
             {
@@ -141,19 +138,7 @@ namespace Setup
                     try
                     {
                         if (!string.IsNullOrEmpty(SettingsManager.Current.Icon))
-                        {
-                            if (SettingsManager.Current.Icon.Contains(".bin"))
-                            {
-                                AppIconPath = $@"{Path}\{SettingsManager.Current.Icon.Split(new string[] { ".bin" }, StringSplitOptions.None)[1]}";
-                            }
-                            else
-                            {
-                                string RawPath = ParsePath(SettingsManager.Current.Icon);
-                                System.IO.File.Copy(RawPath, Path);
-                                AppIconPath = $@"{Path}\{RawPath.Split(new string[] { @"\" }, StringSplitOptions.None).Last()}";
-                            }
-                            key.SetValue("DisplayIcon", AppIconPath);
-                        }
+                        { key.SetValue("DisplayIcon", AppIconPath); }
                         key.SetValue("DisplayName", SettingsManager.Current.Name);
                         key.SetValue("DisplayVersion", SettingsManager.Current.Version);
                         key.SetValue("Publisher", SettingsManager.Current.Publisher);
@@ -171,19 +156,32 @@ namespace Setup
             catch
             { MessageBox.Show("Fail to register application in registry", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
+            // Peform the copy of application files
             try
             {
+                if (AppIconPath != null && !SettingsManager.Current.Icon.Contains(".bin"))
+                { 
+                    System.IO.File.Copy(ParsePath(SettingsManager.Current.Icon), Path);
+                }
+
                 // Copy file
                 if (SettingsManager.Current.DataSource.Contains(".bin"))
                 {
-                    string DS = ParsePath(SettingsManager.Current.DataSource);
-                    if (System.IO.File.Exists(DS))
+                    string DataSourceParsedPath = ParsePath(SettingsManager.Current.DataSource);
+                    if (System.IO.File.Exists(DataSourceParsedPath))
                     {
-                        PackageManager.Extract(DS, Path);
+                        PackageManager.Extract(DataSourceParsedPath, Path);
                     }
                 }
                 else
                 {
+                    if (Directory.Exists(Path))
+                    {
+                        Directory.Delete(Path, true);
+                        Directory.CreateDirectory(Path);
+                    }
+                    else
+                    { Directory.CreateDirectory(Path); }
                     CopyDirectoryContents(ParsePath(SettingsManager.Current.DataSource), Path);
                 }
             }
@@ -193,6 +191,8 @@ namespace Setup
             // Create the unistaller with good information
             try
             {
+                // Create sub directory
+                Directory.CreateDirectory(RootUinstallDir);
                 // Poupulate the unistall information object with good information
                 UninstallManager.Load(SettingsManager.Current.Name, Path, publicDesktopPath, programlnkpath, StartUp, SettingsManager.Current.Architecture, SettingsManager.Current.RegistryKeys);
                 // Create the unistaller
@@ -211,6 +211,8 @@ namespace Setup
                 MessageBox.Show("Fail to create and copy application uninstaller", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+           
+            // Apply all registry setting that are configure in config
             try
             {
                 // Registry settings

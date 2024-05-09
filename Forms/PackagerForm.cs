@@ -423,6 +423,8 @@ namespace Setup.Forms
             }
             // Always remove the temp.json file when export is done
             File.Delete(ConfigPath);
+
+            Process.Start(OutputDirName);
         }
         
         #region Event Handler for Default Mode and Path
@@ -463,9 +465,10 @@ namespace Setup.Forms
 
         private void RemoveReg_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow Row in RegistryView.SelectedRows)
+            if (RegistryView.SelectedRows.Count > 0 && RegistryView.Rows.Count > 0)
             {
-                RegistryView.Rows.Remove(Row);
+                foreach (DataGridViewRow Row in RegistryView.SelectedRows)
+                { RegistryView.Rows.Remove(Row); }
             }
         }
     }

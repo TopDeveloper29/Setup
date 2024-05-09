@@ -15,19 +15,22 @@ namespace Setup
     public static class App
     {
         // Hold if setup.exe extract some temporary file that need to be clean on close
-        public static bool CleanUpRequired { get; set; } = false; 
-        
+        public static bool CleanUpRequired { get; set; } = false;
+
         // List of args fill in initialization to pass on app rehost as admin
-        public static string AppArgs {  get; private set; }
+        public static string AppArgs { get; private set; }
 
         // The real Main function call in Program.cs
         [STAThread]
         public static void Main(string[] Args)
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             int Index = 0;
             bool Quiet = false;
-            string[]InstallArgs = null;
-            
+            string[] InstallArgs = null;
+
             // Process each arguments
             foreach (string arg in Args)
             {
@@ -87,7 +90,7 @@ namespace Setup
                         }
                         Environment.Exit(0);
                         break;
-                    
+
                     // Create a compressed bin file from a folder
                     case "newbin":
                     case "/newbin":
@@ -96,9 +99,9 @@ namespace Setup
                     case "-n":
                         try
                         {
-                            if (Directory.Exists(Args[Index+1]))
+                            if (Directory.Exists(Args[Index + 1]))
                             {
-                                PackageManager.NewBin(Args[Index+1]);
+                                PackageManager.NewBin(Args[Index + 1]);
                             }
                             else { throw new Exception("Folder Not Found"); }
                         }
@@ -118,7 +121,7 @@ namespace Setup
                         SettingsManager.CreateSample();
                         Environment.Exit(0);
                         break;
-                   
+
                     // Run application in packager mode
                     case "packager":
                     case "/packager":
@@ -135,18 +138,16 @@ namespace Setup
                                     UseShellExecute = true,
                                     WorkingDirectory = Environment.CurrentDirectory,
                                     FileName = Process.GetCurrentProcess().MainModule.FileName,
-                                    Arguments = App.AppArgs,
+                                    Arguments = AppArgs,
                                     Verb = "runas"
                                 }
                             };
                             proc.Start();
                             Environment.Exit(0);
                         }
-                        Application.EnableVisualStyles();
-                        Application.SetCompatibleTextRenderingDefault(false);
                         Application.Run(new PackagerForm());
                         break;
-                    
+
                     // Used only for rehost to admin
                     case "/install":
                         try
@@ -230,11 +231,12 @@ namespace Setup
                     }
                     Thread.Sleep(1500);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message,ex.Source,MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, ex.Source, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
 
             // Load default setting (if already load it skip it)
             SettingsManager.Load();
@@ -243,7 +245,7 @@ namespace Setup
             if (Quiet)
             {
                 string InstallPath = string.Empty;
-                
+
                 // If a path is not specify in config find the default path depending of architecture
                 if (string.IsNullOrWhiteSpace(SettingsManager.Current.Path))
                 {
@@ -255,7 +257,7 @@ namespace Setup
                 }
 
                 // Launch Istall using setting apply by config
-                SetupManager.Install(InstallPath,SettingsManager.Current.DesktopCheckBox.Checked, SettingsManager.Current.StartMenuCheckBox.Checked, SettingsManager.Current.StartUpCheckBox.Checked);
+                SetupManager.Install(InstallPath, SettingsManager.Current.DesktopCheckBox.Checked, SettingsManager.Current.StartMenuCheckBox.Checked, SettingsManager.Current.StartUpCheckBox.Checked);
                 Environment.Exit(0);
             }
             else
@@ -264,8 +266,6 @@ namespace Setup
                 if (InstallArgs == null)
                 {
                     // Open setup normaly
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new SetupForm());
                 }
                 else
