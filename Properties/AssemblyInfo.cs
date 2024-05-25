@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Setup")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Setup to install application in windows")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MFHB")]
 [assembly: AssemblyProduct("Setup")]
@@ -33,6 +33,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("24.05.03.3")]
-[assembly: AssemblyFileVersion("24.05.03.3")]
+[assembly: AssemblyVersion("24.05.25.3")]
+[assembly: AssemblyFileVersion("24.05.25.3")]
 [assembly: NeutralResourcesLanguage("en-CA")]

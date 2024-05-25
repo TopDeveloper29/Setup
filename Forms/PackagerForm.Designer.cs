@@ -60,11 +60,11 @@
             this.Architechture = new MaterialSkin.Controls.MaterialComboBox();
             this.ExecutableName = new MaterialSkin.Controls.MaterialTextBox2();
             this.DefaultPath_Group = new System.Windows.Forms.GroupBox();
+            this.DefaultPath_Editable = new MaterialSkin.Controls.MaterialSwitch();
             this.Browse_Path = new MaterialSkin.Controls.MaterialButton();
             this.Default_InstallPath = new MaterialSkin.Controls.MaterialTextBox();
             this.DefaultPath_DefaultMode = new MaterialSkin.Controls.MaterialRadioButton();
             this.DefaultPath_CustomMode = new MaterialSkin.Controls.MaterialRadioButton();
-            this.DefaultPath_Editable = new MaterialSkin.Controls.MaterialSwitch();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.AppName = new MaterialSkin.Controls.MaterialTextBox2();
             this.AppVersion = new MaterialSkin.Controls.MaterialTextBox2();
@@ -75,8 +75,21 @@
             this.Export = new MaterialSkin.Controls.MaterialButton();
             this.SetupType = new MaterialSkin.Controls.MaterialComboBox();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.Save = new MaterialSkin.Controls.MaterialButton();
+            this.SaveAs = new MaterialSkin.Controls.MaterialButton();
             this.Browse = new MaterialSkin.Controls.MaterialButton();
+            this.UninstallScripts = new MaterialSkin.Controls.MaterialListBox();
+            this.ScriptMenu = new MaterialSkin.Controls.MaterialContextMenuStrip();
+            this.addToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ScriptBoth = new System.Windows.Forms.TableLayoutPanel();
+            this.UninstallScriptLabel = new System.Windows.Forms.GroupBox();
+            this.PostScriptLabel = new System.Windows.Forms.GroupBox();
+            this.PostScripts = new MaterialSkin.Controls.MaterialListBox();
+            this.materialCheckbox1 = new MaterialSkin.Controls.MaterialCheckbox();
+            this.materialCheckbox2 = new MaterialSkin.Controls.MaterialCheckbox();
+            this.materialCheckbox3 = new MaterialSkin.Controls.MaterialCheckbox();
             this.Body.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RegistryView)).BeginInit();
@@ -95,6 +108,10 @@
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.ScriptMenu.SuspendLayout();
+            this.ScriptBoth.SuspendLayout();
+            this.UninstallScriptLabel.SuspendLayout();
+            this.PostScriptLabel.SuspendLayout();
             this.SuspendLayout();
             // 
             // Body
@@ -104,11 +121,12 @@
             this.Body.Controls.Add(this.panel2);
             this.Body.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.Body.Enabled = false;
-            this.Body.Location = new System.Drawing.Point(4, 250);
+            this.Body.ForeColor = System.Drawing.Color.Gray;
+            this.Body.Location = new System.Drawing.Point(4, 565);
             this.Body.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Body.Name = "Body";
             this.Body.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Body.Size = new System.Drawing.Size(1195, 637);
+            this.Body.Size = new System.Drawing.Size(1405, 637);
             this.Body.TabIndex = 4;
             this.Body.TabStop = false;
             this.Body.Text = "Setup Configuration";
@@ -120,7 +138,7 @@
             this.panel4.Location = new System.Drawing.Point(4, 239);
             this.panel4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(683, 393);
+            this.panel4.Size = new System.Drawing.Size(893, 393);
             this.panel4.TabIndex = 15;
             // 
             // RegistryView
@@ -143,7 +161,7 @@
             this.RegistryView.RowHeadersWidth = 62;
             this.RegistryView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.RegistryView.ShowEditingIcon = false;
-            this.RegistryView.Size = new System.Drawing.Size(683, 393);
+            this.RegistryView.Size = new System.Drawing.Size(893, 393);
             this.RegistryView.TabIndex = 6;
             // 
             // KeyLocation
@@ -211,7 +229,7 @@
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(8);
-            this.panel1.Size = new System.Drawing.Size(683, 215);
+            this.panel1.Size = new System.Drawing.Size(893, 215);
             this.panel1.TabIndex = 14;
             // 
             // panel3
@@ -222,7 +240,7 @@
             this.panel3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(0, 0, 30, 0);
-            this.panel3.Size = new System.Drawing.Size(265, 199);
+            this.panel3.Size = new System.Drawing.Size(365, 199);
             this.panel3.TabIndex = 5;
             // 
             // StartMenu_Group
@@ -231,11 +249,12 @@
             this.StartMenu_Group.Controls.Add(this.StartMenu_Checked);
             this.StartMenu_Group.Controls.Add(this.StartMenu_Visible);
             this.StartMenu_Group.Dock = System.Windows.Forms.DockStyle.Right;
-            this.StartMenu_Group.Location = new System.Drawing.Point(34, 0);
+            this.StartMenu_Group.ForeColor = System.Drawing.Color.Gray;
+            this.StartMenu_Group.Location = new System.Drawing.Point(39, 0);
             this.StartMenu_Group.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.StartMenu_Group.Name = "StartMenu_Group";
             this.StartMenu_Group.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.StartMenu_Group.Size = new System.Drawing.Size(201, 199);
+            this.StartMenu_Group.Size = new System.Drawing.Size(296, 199);
             this.StartMenu_Group.TabIndex = 4;
             this.StartMenu_Group.TabStop = false;
             this.StartMenu_Group.Text = "Create Start-Menu icon";
@@ -247,7 +266,7 @@
             this.GroupFixStartMenu.Location = new System.Drawing.Point(4, 61);
             this.GroupFixStartMenu.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.GroupFixStartMenu.Name = "GroupFixStartMenu";
-            this.GroupFixStartMenu.Size = new System.Drawing.Size(193, 96);
+            this.GroupFixStartMenu.Size = new System.Drawing.Size(288, 96);
             this.GroupFixStartMenu.TabIndex = 3;
             // 
             // StartMenu_Enable
@@ -263,7 +282,7 @@
             this.StartMenu_Enable.MouseState = MaterialSkin.MouseState.HOVER;
             this.StartMenu_Enable.Name = "StartMenu_Enable";
             this.StartMenu_Enable.Ripple = true;
-            this.StartMenu_Enable.Size = new System.Drawing.Size(193, 37);
+            this.StartMenu_Enable.Size = new System.Drawing.Size(288, 37);
             this.StartMenu_Enable.TabIndex = 1;
             this.StartMenu_Enable.Text = "Enable";
             this.StartMenu_Enable.UseVisualStyleBackColor = true;
@@ -281,7 +300,7 @@
             this.StartMenu_Checked.MouseState = MaterialSkin.MouseState.HOVER;
             this.StartMenu_Checked.Name = "StartMenu_Checked";
             this.StartMenu_Checked.Ripple = true;
-            this.StartMenu_Checked.Size = new System.Drawing.Size(193, 37);
+            this.StartMenu_Checked.Size = new System.Drawing.Size(288, 37);
             this.StartMenu_Checked.TabIndex = 2;
             this.StartMenu_Checked.Text = "Checked";
             this.StartMenu_Checked.UseVisualStyleBackColor = true;
@@ -297,7 +316,7 @@
             this.StartMenu_Visible.MouseState = MaterialSkin.MouseState.HOVER;
             this.StartMenu_Visible.Name = "StartMenu_Visible";
             this.StartMenu_Visible.Ripple = true;
-            this.StartMenu_Visible.Size = new System.Drawing.Size(193, 37);
+            this.StartMenu_Visible.Size = new System.Drawing.Size(288, 37);
             this.StartMenu_Visible.TabIndex = 0;
             this.StartMenu_Visible.Text = "Visible";
             this.StartMenu_Visible.UseVisualStyleBackColor = true;
@@ -308,11 +327,12 @@
             this.Desktop_Group.Controls.Add(this.Desktop_Checked);
             this.Desktop_Group.Controls.Add(this.Desktop_Visible);
             this.Desktop_Group.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Desktop_Group.Location = new System.Drawing.Point(474, 8);
+            this.Desktop_Group.ForeColor = System.Drawing.Color.Gray;
+            this.Desktop_Group.Location = new System.Drawing.Point(574, 8);
             this.Desktop_Group.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Desktop_Group.Name = "Desktop_Group";
             this.Desktop_Group.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Desktop_Group.Size = new System.Drawing.Size(201, 199);
+            this.Desktop_Group.Size = new System.Drawing.Size(311, 199);
             this.Desktop_Group.TabIndex = 1;
             this.Desktop_Group.TabStop = false;
             this.Desktop_Group.Text = "Create desktop icon";
@@ -324,7 +344,7 @@
             this.GroupFixDesktop.Location = new System.Drawing.Point(4, 61);
             this.GroupFixDesktop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.GroupFixDesktop.Name = "GroupFixDesktop";
-            this.GroupFixDesktop.Size = new System.Drawing.Size(193, 96);
+            this.GroupFixDesktop.Size = new System.Drawing.Size(303, 96);
             this.GroupFixDesktop.TabIndex = 3;
             // 
             // Desktop_Enable
@@ -340,7 +360,7 @@
             this.Desktop_Enable.MouseState = MaterialSkin.MouseState.HOVER;
             this.Desktop_Enable.Name = "Desktop_Enable";
             this.Desktop_Enable.Ripple = true;
-            this.Desktop_Enable.Size = new System.Drawing.Size(193, 37);
+            this.Desktop_Enable.Size = new System.Drawing.Size(303, 37);
             this.Desktop_Enable.TabIndex = 1;
             this.Desktop_Enable.Text = "Enable";
             this.Desktop_Enable.UseVisualStyleBackColor = true;
@@ -356,7 +376,7 @@
             this.Desktop_Checked.MouseState = MaterialSkin.MouseState.HOVER;
             this.Desktop_Checked.Name = "Desktop_Checked";
             this.Desktop_Checked.Ripple = true;
-            this.Desktop_Checked.Size = new System.Drawing.Size(193, 37);
+            this.Desktop_Checked.Size = new System.Drawing.Size(303, 37);
             this.Desktop_Checked.TabIndex = 2;
             this.Desktop_Checked.Text = "Checked";
             this.Desktop_Checked.UseVisualStyleBackColor = true;
@@ -372,7 +392,7 @@
             this.Desktop_Visible.MouseState = MaterialSkin.MouseState.HOVER;
             this.Desktop_Visible.Name = "Desktop_Visible";
             this.Desktop_Visible.Ripple = true;
-            this.Desktop_Visible.Size = new System.Drawing.Size(193, 37);
+            this.Desktop_Visible.Size = new System.Drawing.Size(303, 37);
             this.Desktop_Visible.TabIndex = 0;
             this.Desktop_Visible.Text = "Visible";
             this.Desktop_Visible.UseVisualStyleBackColor = true;
@@ -383,6 +403,7 @@
             this.StartUp_Group.Controls.Add(this.StartUp_Checked);
             this.StartUp_Group.Controls.Add(this.StartUp_Visible);
             this.StartUp_Group.Dock = System.Windows.Forms.DockStyle.Left;
+            this.StartUp_Group.ForeColor = System.Drawing.Color.Gray;
             this.StartUp_Group.Location = new System.Drawing.Point(8, 8);
             this.StartUp_Group.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.StartUp_Group.Name = "StartUp_Group";
@@ -390,7 +411,7 @@
             this.StartUp_Group.Size = new System.Drawing.Size(201, 199);
             this.StartUp_Group.TabIndex = 4;
             this.StartUp_Group.TabStop = false;
-            this.StartUp_Group.Text = "Add to start-up icon";
+            this.StartUp_Group.Text = "Add to start-up";
             // 
             // GroupFixStartUp
             // 
@@ -460,7 +481,7 @@
             this.panel2.Controls.Add(this.tableLayoutPanel4);
             this.panel2.Controls.Add(this.AppPublisher);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(687, 24);
+            this.panel2.Location = new System.Drawing.Point(897, 24);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(8);
@@ -572,11 +593,11 @@
             // 
             // DefaultPath_Group
             // 
+            this.DefaultPath_Group.Controls.Add(this.DefaultPath_Editable);
             this.DefaultPath_Group.Controls.Add(this.Browse_Path);
             this.DefaultPath_Group.Controls.Add(this.Default_InstallPath);
             this.DefaultPath_Group.Controls.Add(this.DefaultPath_DefaultMode);
             this.DefaultPath_Group.Controls.Add(this.DefaultPath_CustomMode);
-            this.DefaultPath_Group.Controls.Add(this.DefaultPath_Editable);
             this.DefaultPath_Group.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.DefaultPath_Group.Location = new System.Drawing.Point(8, 372);
             this.DefaultPath_Group.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -587,6 +608,21 @@
             this.DefaultPath_Group.TabStop = false;
             this.DefaultPath_Group.Text = "Default Install Path";
             // 
+            // DefaultPath_Editable
+            // 
+            this.DefaultPath_Editable.AutoSize = true;
+            this.DefaultPath_Editable.Depth = 0;
+            this.DefaultPath_Editable.Location = new System.Drawing.Point(256, 19);
+            this.DefaultPath_Editable.Margin = new System.Windows.Forms.Padding(0);
+            this.DefaultPath_Editable.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.DefaultPath_Editable.MouseState = MaterialSkin.MouseState.HOVER;
+            this.DefaultPath_Editable.Name = "DefaultPath_Editable";
+            this.DefaultPath_Editable.Ripple = true;
+            this.DefaultPath_Editable.Size = new System.Drawing.Size(115, 37);
+            this.DefaultPath_Editable.TabIndex = 4;
+            this.DefaultPath_Editable.Text = "Editable";
+            this.DefaultPath_Editable.UseVisualStyleBackColor = true;
+            // 
             // Browse_Path
             // 
             this.Browse_Path.AutoSize = false;
@@ -596,12 +632,12 @@
             this.Browse_Path.Enabled = false;
             this.Browse_Path.HighEmphasis = true;
             this.Browse_Path.Icon = null;
-            this.Browse_Path.Location = new System.Drawing.Point(292, 86);
+            this.Browse_Path.Location = new System.Drawing.Point(248, 77);
             this.Browse_Path.Margin = new System.Windows.Forms.Padding(6, 9, 6, 9);
             this.Browse_Path.MouseState = MaterialSkin.MouseState.HOVER;
             this.Browse_Path.Name = "Browse_Path";
             this.Browse_Path.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.Browse_Path.Size = new System.Drawing.Size(172, 48);
+            this.Browse_Path.Size = new System.Drawing.Size(218, 45);
             this.Browse_Path.TabIndex = 3;
             this.Browse_Path.Text = "Browse";
             this.Browse_Path.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -663,23 +699,6 @@
             this.DefaultPath_CustomMode.Text = "Custom Path";
             this.DefaultPath_CustomMode.UseVisualStyleBackColor = true;
             this.DefaultPath_CustomMode.CheckedChanged += new System.EventHandler(this.DefaultPath_CustomMode_CheckedChanged);
-            // 
-            // DefaultPath_Editable
-            // 
-            this.DefaultPath_Editable.AutoSize = true;
-            this.DefaultPath_Editable.Checked = true;
-            this.DefaultPath_Editable.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.DefaultPath_Editable.Depth = 0;
-            this.DefaultPath_Editable.Location = new System.Drawing.Point(292, 43);
-            this.DefaultPath_Editable.Margin = new System.Windows.Forms.Padding(0);
-            this.DefaultPath_Editable.MouseLocation = new System.Drawing.Point(-1, -1);
-            this.DefaultPath_Editable.MouseState = MaterialSkin.MouseState.HOVER;
-            this.DefaultPath_Editable.Name = "DefaultPath_Editable";
-            this.DefaultPath_Editable.Ripple = false;
-            this.DefaultPath_Editable.Size = new System.Drawing.Size(115, 22);
-            this.DefaultPath_Editable.TabIndex = 5;
-            this.DefaultPath_Editable.Text = "Editable";
-            this.DefaultPath_Editable.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel4
             // 
@@ -813,7 +832,7 @@
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1195, 138);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1405, 138);
             this.tableLayoutPanel2.TabIndex = 7;
             // 
             // AppPath
@@ -840,7 +859,7 @@
             this.AppPath.SelectionLength = 0;
             this.AppPath.SelectionStart = 0;
             this.AppPath.ShortcutsEnabled = true;
-            this.AppPath.Size = new System.Drawing.Size(731, 48);
+            this.AppPath.Size = new System.Drawing.Size(867, 48);
             this.AppPath.TabIndex = 1;
             this.AppPath.TabStop = false;
             this.AppPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -857,12 +876,12 @@
             this.Export.Enabled = false;
             this.Export.HighEmphasis = true;
             this.Export.Icon = null;
-            this.Export.Location = new System.Drawing.Point(780, 89);
+            this.Export.Location = new System.Drawing.Point(916, 89);
             this.Export.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.Export.MouseState = MaterialSkin.MouseState.HOVER;
             this.Export.Name = "Export";
             this.Export.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.Export.Size = new System.Drawing.Size(411, 43);
+            this.Export.Size = new System.Drawing.Size(485, 43);
             this.Export.TabIndex = 5;
             this.Export.Text = "Create Setup";
             this.Export.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -892,49 +911,49 @@
             "Setup and data folder",
             "Setup, config and data.bin",
             "Setup, config and data folder"});
-            this.SetupType.Location = new System.Drawing.Point(780, 5);
+            this.SetupType.Location = new System.Drawing.Point(916, 5);
             this.SetupType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.SetupType.MaxDropDownItems = 6;
             this.SetupType.MouseState = MaterialSkin.MouseState.OUT;
             this.SetupType.Name = "SetupType";
-            this.SetupType.Size = new System.Drawing.Size(411, 49);
+            this.SetupType.Size = new System.Drawing.Size(485, 49);
             this.SetupType.StartIndex = 0;
             this.SetupType.TabIndex = 0;
             // 
             // panel5
             // 
-            this.panel5.Controls.Add(this.Save);
+            this.panel5.Controls.Add(this.SaveAs);
             this.panel5.Controls.Add(this.Browse);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(4, 88);
             this.panel5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel5.Name = "panel5";
             this.panel5.Padding = new System.Windows.Forms.Padding(0, 0, 38, 0);
-            this.panel5.Size = new System.Drawing.Size(768, 45);
+            this.panel5.Size = new System.Drawing.Size(904, 45);
             this.panel5.TabIndex = 6;
             // 
-            // Save
+            // SaveAs
             // 
-            this.Save.AutoSize = false;
-            this.Save.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Save.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            this.Save.Depth = 0;
-            this.Save.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Save.Enabled = false;
-            this.Save.HighEmphasis = true;
-            this.Save.Icon = null;
-            this.Save.Location = new System.Drawing.Point(538, 0);
-            this.Save.Margin = new System.Windows.Forms.Padding(6, 9, 6, 9);
-            this.Save.MouseState = MaterialSkin.MouseState.HOVER;
-            this.Save.Name = "Save";
-            this.Save.NoAccentTextColor = System.Drawing.Color.Empty;
-            this.Save.Size = new System.Drawing.Size(192, 45);
-            this.Save.TabIndex = 7;
-            this.Save.Text = "Save";
-            this.Save.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            this.Save.UseAccentColor = false;
-            this.Save.UseVisualStyleBackColor = true;
-            this.Save.Click += new System.EventHandler(this.Save_Click);
+            this.SaveAs.AutoSize = false;
+            this.SaveAs.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SaveAs.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            this.SaveAs.Depth = 0;
+            this.SaveAs.Dock = System.Windows.Forms.DockStyle.Right;
+            this.SaveAs.Enabled = false;
+            this.SaveAs.HighEmphasis = true;
+            this.SaveAs.Icon = null;
+            this.SaveAs.Location = new System.Drawing.Point(674, 0);
+            this.SaveAs.Margin = new System.Windows.Forms.Padding(6, 9, 6, 9);
+            this.SaveAs.MouseState = MaterialSkin.MouseState.HOVER;
+            this.SaveAs.Name = "SaveAs";
+            this.SaveAs.NoAccentTextColor = System.Drawing.Color.Empty;
+            this.SaveAs.Size = new System.Drawing.Size(192, 45);
+            this.SaveAs.TabIndex = 7;
+            this.SaveAs.Text = "Save as";
+            this.SaveAs.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            this.SaveAs.UseAccentColor = false;
+            this.SaveAs.UseVisualStyleBackColor = true;
+            this.SaveAs.Click += new System.EventHandler(this.Save_Click);
             // 
             // Browse
             // 
@@ -958,11 +977,173 @@
             this.Browse.UseVisualStyleBackColor = true;
             this.Browse.Click += new System.EventHandler(this.Browse_Click);
             // 
+            // UninstallScripts
+            // 
+            this.UninstallScripts.BackColor = System.Drawing.Color.White;
+            this.UninstallScripts.BorderColor = System.Drawing.Color.LightGray;
+            this.UninstallScripts.ContextMenuStrip = this.ScriptMenu;
+            this.UninstallScripts.Depth = 0;
+            this.UninstallScripts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.UninstallScripts.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.UninstallScripts.Location = new System.Drawing.Point(3, 22);
+            this.UninstallScripts.MouseState = MaterialSkin.MouseState.HOVER;
+            this.UninstallScripts.Name = "UninstallScripts";
+            this.UninstallScripts.SelectedIndex = -1;
+            this.UninstallScripts.SelectedItem = null;
+            this.UninstallScripts.Size = new System.Drawing.Size(676, 261);
+            this.UninstallScripts.TabIndex = 8;
+            this.UninstallScripts.MouseEnter += new System.EventHandler(this.UninstallScripts_MouseEnter);
+            // 
+            // ScriptMenu
+            // 
+            this.ScriptMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.ScriptMenu.Depth = 0;
+            this.ScriptMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.ScriptMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToolStripMenuItem1,
+            this.editToolStripMenuItem1,
+            this.removeToolStripMenuItem2,
+            this.clearAllToolStripMenuItem});
+            this.ScriptMenu.MouseState = MaterialSkin.MouseState.HOVER;
+            this.ScriptMenu.Name = "PostMenu";
+            this.ScriptMenu.Size = new System.Drawing.Size(149, 132);
+            this.ScriptMenu.Tag = "";
+            // 
+            // addToolStripMenuItem1
+            // 
+            this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(148, 32);
+            this.addToolStripMenuItem1.Text = "Add";
+            this.addToolStripMenuItem1.Click += new System.EventHandler(this.addToolStripMenuItem1_Click);
+            // 
+            // editToolStripMenuItem1
+            // 
+            this.editToolStripMenuItem1.Name = "editToolStripMenuItem1";
+            this.editToolStripMenuItem1.Size = new System.Drawing.Size(148, 32);
+            this.editToolStripMenuItem1.Text = "Edit";
+            this.editToolStripMenuItem1.Click += new System.EventHandler(this.editToolStripMenuItem1_Click);
+            // 
+            // removeToolStripMenuItem2
+            // 
+            this.removeToolStripMenuItem2.Name = "removeToolStripMenuItem2";
+            this.removeToolStripMenuItem2.Size = new System.Drawing.Size(148, 32);
+            this.removeToolStripMenuItem2.Text = "Remove";
+            this.removeToolStripMenuItem2.Click += new System.EventHandler(this.removeToolStripMenuItem2_Click);
+            // 
+            // clearAllToolStripMenuItem
+            // 
+            this.clearAllToolStripMenuItem.Name = "clearAllToolStripMenuItem";
+            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(148, 32);
+            this.clearAllToolStripMenuItem.Text = "Clear";
+            this.clearAllToolStripMenuItem.Click += new System.EventHandler(this.clearAllToolStripMenuItem_Click);
+            // 
+            // ScriptBoth
+            // 
+            this.ScriptBoth.ColumnCount = 2;
+            this.ScriptBoth.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.ScriptBoth.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.ScriptBoth.Controls.Add(this.UninstallScriptLabel, 1, 0);
+            this.ScriptBoth.Controls.Add(this.PostScriptLabel, 0, 0);
+            this.ScriptBoth.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptBoth.Location = new System.Drawing.Point(4, 243);
+            this.ScriptBoth.Margin = new System.Windows.Forms.Padding(30);
+            this.ScriptBoth.Name = "ScriptBoth";
+            this.ScriptBoth.Padding = new System.Windows.Forms.Padding(15);
+            this.ScriptBoth.RowCount = 1;
+            this.ScriptBoth.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.ScriptBoth.Size = new System.Drawing.Size(1405, 322);
+            this.ScriptBoth.TabIndex = 10;
+            // 
+            // UninstallScriptLabel
+            // 
+            this.UninstallScriptLabel.Controls.Add(this.UninstallScripts);
+            this.UninstallScriptLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.UninstallScriptLabel.Location = new System.Drawing.Point(705, 18);
+            this.UninstallScriptLabel.Name = "UninstallScriptLabel";
+            this.UninstallScriptLabel.Size = new System.Drawing.Size(682, 286);
+            this.UninstallScriptLabel.TabIndex = 12;
+            this.UninstallScriptLabel.TabStop = false;
+            this.UninstallScriptLabel.Text = "Uninstall Scripts";
+            // 
+            // PostScriptLabel
+            // 
+            this.PostScriptLabel.Controls.Add(this.PostScripts);
+            this.PostScriptLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PostScriptLabel.Location = new System.Drawing.Point(18, 18);
+            this.PostScriptLabel.Name = "PostScriptLabel";
+            this.PostScriptLabel.Size = new System.Drawing.Size(681, 286);
+            this.PostScriptLabel.TabIndex = 11;
+            this.PostScriptLabel.TabStop = false;
+            this.PostScriptLabel.Text = "Post install scripts";
+            // 
+            // PostScripts
+            // 
+            this.PostScripts.BackColor = System.Drawing.Color.White;
+            this.PostScripts.BorderColor = System.Drawing.Color.LightGray;
+            this.PostScripts.ContextMenuStrip = this.ScriptMenu;
+            this.PostScripts.Depth = 0;
+            this.PostScripts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PostScripts.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.PostScripts.Location = new System.Drawing.Point(3, 22);
+            this.PostScripts.MouseState = MaterialSkin.MouseState.HOVER;
+            this.PostScripts.Name = "PostScripts";
+            this.PostScripts.SelectedIndex = -1;
+            this.PostScripts.SelectedItem = null;
+            this.PostScripts.Size = new System.Drawing.Size(675, 261);
+            this.PostScripts.TabIndex = 0;
+            this.PostScripts.MouseEnter += new System.EventHandler(this.PostScripts_MouseEnter);
+            // 
+            // materialCheckbox1
+            // 
+            this.materialCheckbox1.Depth = 0;
+            this.materialCheckbox1.Location = new System.Drawing.Point(0, 0);
+            this.materialCheckbox1.Margin = new System.Windows.Forms.Padding(0);
+            this.materialCheckbox1.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialCheckbox1.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialCheckbox1.Name = "materialCheckbox1";
+            this.materialCheckbox1.ReadOnly = false;
+            this.materialCheckbox1.Ripple = true;
+            this.materialCheckbox1.Size = new System.Drawing.Size(104, 37);
+            this.materialCheckbox1.TabIndex = 0;
+            this.materialCheckbox1.Text = "materialCheckbox1";
+            this.materialCheckbox1.UseVisualStyleBackColor = true;
+            // 
+            // materialCheckbox2
+            // 
+            this.materialCheckbox2.Depth = 0;
+            this.materialCheckbox2.Location = new System.Drawing.Point(0, 0);
+            this.materialCheckbox2.Margin = new System.Windows.Forms.Padding(0);
+            this.materialCheckbox2.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialCheckbox2.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialCheckbox2.Name = "materialCheckbox2";
+            this.materialCheckbox2.ReadOnly = false;
+            this.materialCheckbox2.Ripple = true;
+            this.materialCheckbox2.Size = new System.Drawing.Size(104, 37);
+            this.materialCheckbox2.TabIndex = 0;
+            this.materialCheckbox2.Text = "materialCheckbox2";
+            this.materialCheckbox2.UseVisualStyleBackColor = true;
+            // 
+            // materialCheckbox3
+            // 
+            this.materialCheckbox3.Depth = 0;
+            this.materialCheckbox3.Location = new System.Drawing.Point(0, 0);
+            this.materialCheckbox3.Margin = new System.Windows.Forms.Padding(0);
+            this.materialCheckbox3.MouseLocation = new System.Drawing.Point(-1, -1);
+            this.materialCheckbox3.MouseState = MaterialSkin.MouseState.HOVER;
+            this.materialCheckbox3.Name = "materialCheckbox3";
+            this.materialCheckbox3.ReadOnly = false;
+            this.materialCheckbox3.Ripple = true;
+            this.materialCheckbox3.Size = new System.Drawing.Size(104, 37);
+            this.materialCheckbox3.TabIndex = 0;
+            this.materialCheckbox3.Text = "materialCheckbox3";
+            this.materialCheckbox3.UseVisualStyleBackColor = true;
+            // 
             // PackagerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1203, 892);
+            this.ClientSize = new System.Drawing.Size(1413, 1207);
+            this.Controls.Add(this.ScriptBoth);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.Body);
             this.Icon = global::Setup.Properties.Resources.setup;
@@ -997,6 +1178,10 @@
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
+            this.ScriptMenu.ResumeLayout(false);
+            this.ScriptBoth.ResumeLayout(false);
+            this.UninstallScriptLabel.ResumeLayout(false);
+            this.PostScriptLabel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1008,7 +1193,6 @@
         private MaterialSkin.Controls.MaterialSwitch Desktop_Visible;
         private MaterialSkin.Controls.MaterialSwitch Desktop_Enable;
         private System.Windows.Forms.DataGridView RegistryView;
-        private MaterialSkin.Controls.MaterialSwitch DefaultPath_Editable;
         private System.Windows.Forms.GroupBox StartUp_Group;
         private System.Windows.Forms.Panel GroupFixStartUp;
         private MaterialSkin.Controls.MaterialSwitch StartUp_Enable;
@@ -1044,12 +1228,26 @@
         private MaterialSkin.Controls.MaterialComboBox SetupType;
         private MaterialSkin.Controls.MaterialContextMenuStrip RegContextMenu;
         private System.Windows.Forms.Panel panel5;
-        private MaterialSkin.Controls.MaterialButton Save;
+        private MaterialSkin.Controls.MaterialButton SaveAs;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem RemoveReg;
         private System.Windows.Forms.DataGridViewTextBoxColumn KeyLocation;
         private System.Windows.Forms.DataGridViewTextBoxColumn KeyPath;
         private System.Windows.Forms.DataGridViewTextBoxColumn KeyName;
         private System.Windows.Forms.DataGridViewTextBoxColumn KeyValue;
+        private MaterialSkin.Controls.MaterialListBox UninstallScripts;
+        private System.Windows.Forms.TableLayoutPanel ScriptBoth;
+        private System.Windows.Forms.GroupBox UninstallScriptLabel;
+        private System.Windows.Forms.GroupBox PostScriptLabel;
+        private MaterialSkin.Controls.MaterialContextMenuStrip ScriptMenu;
+        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem1;
+        private MaterialSkin.Controls.MaterialListBox PostScripts;
+        private MaterialSkin.Controls.MaterialCheckbox materialCheckbox1;
+        private MaterialSkin.Controls.MaterialCheckbox materialCheckbox2;
+        private MaterialSkin.Controls.MaterialCheckbox materialCheckbox3;
+        private MaterialSkin.Controls.MaterialSwitch DefaultPath_Editable;
     }
 }

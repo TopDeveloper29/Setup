@@ -13,19 +13,8 @@ namespace Setup
         public SetupForm()
         {
             InitializeComponent();
-
-            var materialSkinManager = MaterialSkinManager.Instance;
-            materialSkinManager.AddFormToManage(this);
-            if (SettingsManager.IsSystemInDarkMode())
-            {
-                materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
-            }
-            else
-            {
-                materialSkinManager.Theme = MaterialSkinManager.Themes.LIGHT;
-            }
-            materialSkinManager.ColorScheme = new ColorScheme(Primary.BlueGrey800, Primary.BlueGrey900, Primary.BlueGrey500, Accent.LightBlue200, TextShade.WHITE);
-
+            Theme.Init(this);
+            
             try
             {
                 // Populate all data with loaded config

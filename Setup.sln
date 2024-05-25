@@ -9,26 +9,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uninstall", "Uninstall\Unin
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Debug|Any CPU.Build.0 = Debug|x64
 		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Debug|x64.ActiveCfg = Debug|x64
 		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Debug|x64.Build.0 = Debug|x64
-		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Release|Any CPU.ActiveCfg = Release|x64
-		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Release|Any CPU.Build.0 = Release|x64
 		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Release|x64.ActiveCfg = Release|x64
 		{8468263B-EE67-4E48-A1D4-A482BDD8D246}.Release|x64.Build.0 = Release|x64
-		{7E901396-3513-489D-9456-EA326EEE742D}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{7E901396-3513-489D-9456-EA326EEE742D}.Debug|Any CPU.Build.0 = Debug|x64
 		{7E901396-3513-489D-9456-EA326EEE742D}.Debug|x64.ActiveCfg = Debug|x64
 		{7E901396-3513-489D-9456-EA326EEE742D}.Debug|x64.Build.0 = Debug|x64
-		{7E901396-3513-489D-9456-EA326EEE742D}.Release|Any CPU.ActiveCfg = Release|x64
-		{7E901396-3513-489D-9456-EA326EEE742D}.Release|Any CPU.Build.0 = Release|x64
 		{7E901396-3513-489D-9456-EA326EEE742D}.Release|x64.ActiveCfg = Release|x64
 		{7E901396-3513-489D-9456-EA326EEE742D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection

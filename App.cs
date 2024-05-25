@@ -24,6 +24,7 @@ namespace Setup
         [STAThread]
         public static void Main(string[] Args)
         {
+            //Args = new string[] {"/p"};
             int Index = 0;
             bool Quiet = false;
             string[]InstallArgs = null;
@@ -77,7 +78,7 @@ namespace Setup
                         {
                             if (File.Exists(Args[Index + 1]))
                             {
-                                PackageManager.NewSelfExe(Args[Index + 1]);
+                                PackageManager.NewSelfExe(Args[Index + 1],$"{AppDomain.CurrentDomain.BaseDirectory}Setup");
                             }
                             else { throw new Exception("Folder Not Found"); }
                         }
@@ -145,6 +146,7 @@ namespace Setup
                         Application.EnableVisualStyles();
                         Application.SetCompatibleTextRenderingDefault(false);
                         Application.Run(new PackagerForm());
+                        Environment.Exit(0);
                         break;
                     
                     // Used only for rehost to admin

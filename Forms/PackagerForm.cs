@@ -3,6 +3,7 @@ using MaterialSkin.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Setup.Class;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,26 +18,25 @@ namespace Setup.Forms
 {
     public partial class PackagerForm : MaterialForm
     {
-        private readonly MaterialSkinManager materialSkinManager;
         // Hold if Packager create temporary file that required a clean-up at close
+        public string ProjectPath { get; set; } = null;
+        public int FocusScript = 0;
         public bool DataCleanRequired = false;
         public PackagerForm()
         {
             InitializeComponent();
-            materialSkinManager = MaterialSkinManager.Instance;
-            materialSkinManager.AddFormToManage(this);
+            Theme.Init(this);
         }
         private void PackagerForm_Load(object sender, EventArgs e)
         {
             if (SettingsManager.IsSystemInDarkMode())
             {
-                materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
                 RegistryView.BackgroundColor = Color.FromArgb(65, 65, 65);
 
                 RegistryView.EnableHeadersVisualStyles = false;
                 DataGridViewCellStyle Style;
 
-                Style = new DataGridViewCellStyle { BackColor = Color.FromArgb(85, 85, 85), ForeColor = Color.White,SelectionBackColor = Color.FromArgb(95, 95, 95), SelectionForeColor = Color.LightGray };
+                Style = new DataGridViewCellStyle { BackColor = Color.FromArgb(85, 85, 85), ForeColor = Color.White, SelectionBackColor = Color.FromArgb(95, 95, 95), SelectionForeColor = Color.LightGray };
                 foreach (DataGridViewColumn col in RegistryView.Columns)
                 {
                     col.DefaultCellStyle = Style;
@@ -49,14 +49,8 @@ namespace Setup.Forms
                 Style = new DataGridViewCellStyle { BackColor = Color.FromArgb(54, 70, 78), ForeColor = Color.White, SelectionBackColor = Color.FromArgb(64, 80, 88), SelectionForeColor = Color.LightGray };
                 RegistryView.RowHeadersDefaultCellStyle = Style;
                 RegistryView.ColumnHeadersDefaultCellStyle = Style;
-                
-            }
-            else
-            {
-                materialSkinManager.Theme = MaterialSkinManager.Themes.LIGHT;
-            }
-            materialSkinManager.ColorScheme = new ColorScheme(Primary.BlueGrey800, Primary.BlueGrey900, Primary.BlueGrey500, Accent.LightBlue200, TextShade.WHITE);
 
+            }
         }
 
         // Load config file to current setting object
@@ -111,11 +105,33 @@ namespace Setup.Forms
                     RegistryView.Rows.Add(Item.Type.ToString(), Item.Path, Item.Name, Item.Value);
                 }
             }
+
+            // Post Scripts
+            if (SettingsManager.Current.PowershellScripts != null && SettingsManager.Current.PowershellScripts.Count > 0)
+            {
+                PostScripts.Items.Clear();
+                foreach (string Key in SettingsManager.Current.PowershellScripts.Keys)
+                {
+                    PostScripts.Items.Add(new MaterialListBoxItem { Text = Key, Tag = SettingsManager.Current.PowershellScripts[Key] });
+                }
+            }
+
+            // Uninstall scripts
+
+            if (SettingsManager.Current.UninstallScripts != null && SettingsManager.Current.UninstallScripts.Count > 0)
+            {
+                UninstallScripts.Items.Clear();
+                foreach (string Key in SettingsManager.Current.UninstallScripts.Keys)
+                {
+                    UninstallScripts.Items.Add(new MaterialListBoxItem { Text = Key, Tag = SettingsManager.Current.UninstallScripts[Key] });
+                }
+            }
         }
-        
+
         // Update the Current setting object and json file
         public void SaveConfig()
         {
+
             SettingsManager.Current = new Setting
             {
                 Name = AppName.Text,
@@ -143,7 +159,6 @@ namespace Setup.Forms
                 },
                 DataSource = AppPath.Text
             };
-
 
             // Architecture
             switch (Architechture.Text.ToLower())
@@ -190,7 +205,7 @@ namespace Setup.Forms
                 {
                     if (!Item.IsNewRow)
                     {
-                        Enum.TryParse(Item.Cells[0].Value?.ToString() ?? "HKLM",out RegType Type);
+                        Enum.TryParse(Item.Cells[0].Value?.ToString() ?? "HKLM", out RegType Type);
                         string Path = Item.Cells[1].Value?.ToString() ?? string.Empty;
                         string Name = Item.Cells[2].Value?.ToString() ?? string.Empty;
                         string Value = Item.Cells[3].Value?.ToString() ?? string.Empty;
@@ -198,9 +213,32 @@ namespace Setup.Forms
                     }
                 }
             }
+
+            // Post Scripts
+            SettingsManager.Current.PowershellScripts.Clear(); 
+
+            if (PostScripts.Items.Count > 0)
+            {
+                foreach (MaterialListBoxItem Item in PostScripts.Items)
+                {
+                    SettingsManager.Current.PowershellScripts.Add(Item.Text, Item.Tag.ToString());
+                }
+            }
+
+            // Uninstall scripts
+            SettingsManager.Current.UninstallScripts.Clear(); 
+
+            if (UninstallScripts.Items.Count > 0)
+            {
+                foreach (MaterialListBoxItem Item in UninstallScripts.Items)
+                {
+                    SettingsManager.Current.UninstallScripts.Add(Item.Text, Item.Tag.ToString());
+                }
+            }
+
             SaveToJson();
         }
-        
+
         // Update json file base on current setting object
         private void SaveToJson()
         {
@@ -215,13 +253,16 @@ namespace Setup.Forms
             };
 
             string json = JsonConvert.SerializeObject(SettingsManager.Current, settings);
-            File.WriteAllText($@"{AppDomain.CurrentDomain.BaseDirectory}\temp.json", json);
+            string SavePath = $@"{AppDomain.CurrentDomain.BaseDirectory}\temp.json";
+            if (!string.IsNullOrWhiteSpace(ProjectPath))
+            { SavePath = ProjectPath; }
+            File.WriteAllText(SavePath, json);
         }
 
         // Enable or diable editing and exporting in the form (if a folder is not loaded)
         public void EditAndExport(bool Enable = true)
         {
-            Save.Enabled = Enable;
+            SaveAs.Enabled = Enable;
             Body.Enabled = Enable;
             Export.Enabled = Enable;
             if (Enable == false)
@@ -231,11 +272,12 @@ namespace Setup.Forms
         {
             // Reset the Edit and Export state to off
             EditAndExport(false);
+            ProjectPath = null;
 
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                Filter = "Application/Setup (*.exe)|*.exe|Config File (.json)|*.json",
+                Filter = "Executable / Configuration file|*.exe;*.json",
                 Multiselect = false
             };
 
@@ -249,7 +291,7 @@ namespace Setup.Forms
                 {
                     // Grab binary information of a exe file
                     string ExeBin = File.ReadAllText(fileinfo.FullName);
-                    
+
                     // Check if the binary contain pkg flag if yes process it as setup else process it as normal exe
                     if (ExeBin != null && ExeBin.Contains("!pkg|START|pkg!") && ExeBin.Contains("!pkg|END|pkg!"))
                     {
@@ -263,7 +305,14 @@ namespace Setup.Forms
                             string json = PackageManager.Base64ToString(EmbedPackageBin.Split(new string[] { $"!cfg|{SetupCfgName}|cfg!" }, StringSplitOptions.None)[1].Split(new string[] { "!cfg|END|cfg!" }, StringSplitOptions.None)[0]);
                             SettingsManager.LoadFromJson(json);
                             SaveToJson();
-                            LoadConfig(SetupManager.ParsePath(@".\temp.json"));
+                            if (ProjectPath == null)
+                            {
+                                LoadConfig(SetupManager.ParsePath(@".\temp.json"));
+                            }
+                            else
+                            {
+                                LoadConfig(SetupManager.ParsePath(ProjectPath));
+                            }
 
                             // Check if bin flag exist if yes extrac the bin file
                             if (EmbedPackageBin.Contains("!bin|END|bin!"))
@@ -275,7 +324,7 @@ namespace Setup.Forms
 
                                 // Extract the binary to temporary folder
                                 PackageManager.Extract(SetupManager.ParsePath($@".\{SetupManager.SetupBinName}"), SetupManager.ParsePath(@".\data"));
-                                
+
                                 // Set data source to this temporary folder
                                 AppPath.Text = SetupManager.ParsePath(@".\data");
 
@@ -305,7 +354,7 @@ namespace Setup.Forms
                             }
                             EditAndExport();
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         { MessageBox.Show($"Canot load this setup:\n {ex.Message}"); }
                     }
                     else
@@ -332,7 +381,7 @@ namespace Setup.Forms
                         }
 
                         DataCleanRequired = false;
-                        
+
                         //Enable editing and update the current setting object and create temp.json
                         EditAndExport();
                         SaveConfig();
@@ -343,6 +392,8 @@ namespace Setup.Forms
                 {
                     // Load json config file
                     LoadConfig(fileinfo.FullName);
+                    ProjectPath = fileinfo.FullName;
+                    SaveAs.Text = "Save";
                     if (!string.IsNullOrWhiteSpace(AppPath.Text))
                     {
                         if (AppPath.Text.Contains(".bin")) // If datasource of config is a bin temporary extract it to .\data
@@ -360,7 +411,7 @@ namespace Setup.Forms
                     }
                 }
             }
-        }        
+        }
         private void Export_Click(object sender, EventArgs e)
         {
             SaveConfig(); // Save the config with last information
@@ -369,6 +420,11 @@ namespace Setup.Forms
             string OutputDirName = $"Setup {SettingsManager.Current.Name} {SettingsManager.Current.Version}";
             string OutputDirPath = $"{AppDomain.CurrentDomain.BaseDirectory}{OutputDirName}";
             string ConfigPath = $"{AppDomain.CurrentDomain.BaseDirectory}temp.json";
+            if (ProjectPath != null)
+            {
+                ConfigPath = ProjectPath;
+                OutputDirPath = $@"{new FileInfo(ProjectPath).Directory.FullName}\{OutputDirName}";
+            }
 
             // Delete the output directory if it exist and create empty one
             if (Directory.Exists(OutputDirPath))
@@ -382,49 +438,68 @@ namespace Setup.Forms
              * Then create or copy the setup to output folder
              * Finaly move all aplicable file
             */
-            switch (SetupType.Text)
+            try
             {
-                case "Setup and data folder":
-                    SettingsManager.Current.DataSource = ".\\data";
-                    SaveToJson();
-                    SetupManager.CopyDirectoryContents(AppPath.Text, $"{OutputDirPath}\\data");
-                    PackageManager.NewExe(ConfigPath, OutputDirName);
-                    break;
-                case "Self Executable":
-                    SettingsManager.Current.DataSource = ".\\_.bin";
-                    SettingsManager.Current.Icon = SettingsManager.Current.Icon.Replace("data.bin", "_.bin");
-                    SaveToJson();
-                    PackageManager.NewBin(AppPath.Text, "_.bin");
-                    PackageManager.NewSelfExe(ConfigPath, OutputDirName);
-                    File.Delete($"{AppDomain.CurrentDomain.BaseDirectory}_.bin");
-                    break;
-                case "Setup and data.bin":
-                    SettingsManager.Current.DataSource = ".\\data.bin";
-                    SaveToJson();
-                    PackageManager.NewBin(AppPath.Text, "_.bin");
-                    PackageManager.NewExe(ConfigPath, OutputDirName);
-                    File.Move($"{AppDomain.CurrentDomain.BaseDirectory}_.bin", $"{OutputDirPath}\\data.bin");
-                    break;
-                case "Setup, config and data.bin":
-                    SettingsManager.Current.DataSource = ".\\data.bin";
-                    SaveToJson();
-                    PackageManager.NewBin(AppPath.Text, "_.bin");
-                    File.Copy(Assembly.GetExecutingAssembly().Location, $"{OutputDirPath}\\Setup.exe");
-                    File.Move($"{AppDomain.CurrentDomain.BaseDirectory}temp.json", $"{OutputDirPath}\\config.json");
-                    File.Move($"{AppDomain.CurrentDomain.BaseDirectory}_.bin", $"{OutputDirPath}\\data.bin");
-                    break;
-                case "Setup, config and data folder":
-                    SettingsManager.Current.DataSource = ".\\data";
-                    SaveToJson();
-                    SetupManager.CopyDirectoryContents(AppPath.Text, $"{OutputDirPath}\\data");
-                    File.Copy(Assembly.GetExecutingAssembly().Location, $"{OutputDirPath}\\Setup.exe");
-                    File.Move($"{AppDomain.CurrentDomain.BaseDirectory}temp.json", $"{OutputDirPath}\\config.json");
-                    break;
+                switch (SetupType.Text)
+                {
+                    case "Self Executable":
+                        SettingsManager.Current.DataSource = ".\\_.bin";
+                        if (SettingsManager.Current.Icon != null)
+                        { SettingsManager.Current.Icon = SettingsManager.Current.Icon.Replace("data.bin", "_.bin"); }
+                        SaveToJson();
+                        PackageManager.NewBin(AppPath.Text, "_.bin");
+                        PackageManager.NewSelfExe(ConfigPath, OutputDirPath);
+                        File.Delete($"{AppDomain.CurrentDomain.BaseDirectory}_.bin");
+                        break;
+                    case "Setup and data.bin":
+                        SettingsManager.Current.DataSource = ".\\data.bin";
+                        SaveToJson();
+                        PackageManager.NewBin(AppPath.Text, "_.bin");
+                        PackageManager.NewExe(ConfigPath, OutputDirPath);
+                        File.Move($"{AppDomain.CurrentDomain.BaseDirectory}_.bin", $"{OutputDirPath}\\data.bin");
+                        break;
+                    case "Setup and data folder":
+                        SettingsManager.Current.DataSource = ".\\data";
+                        SaveToJson();
+                        SetupManager.CopyDirectoryContents(AppPath.Text, $"{OutputDirPath}\\data");
+                        PackageManager.NewExe(ConfigPath, OutputDirPath);
+                        break;
+                    case "Setup, config and data.bin":
+                        SettingsManager.Current.DataSource = ".\\data.bin";
+                        SaveToJson();
+                        PackageManager.NewBin(AppPath.Text, "_.bin");
+                        File.Copy(Assembly.GetExecutingAssembly().Location, $"{OutputDirPath}\\Setup.exe");
+                        if (!ConfigPath.ToLower().Contains("temp.json"))
+                        {
+                            File.Copy(ConfigPath, $"{AppDomain.CurrentDomain.BaseDirectory}temp.json");
+                        }
+                        File.Move($"{AppDomain.CurrentDomain.BaseDirectory}temp.json", $"{OutputDirPath}\\config.json");
+                        File.Move($"{AppDomain.CurrentDomain.BaseDirectory}_.bin", $"{OutputDirPath}\\data.bin");
+                        break;
+                    case "Setup, config and data folder":
+                        SettingsManager.Current.DataSource = ".\\data";
+                        SaveToJson();
+                        SetupManager.CopyDirectoryContents(AppPath.Text, $"{OutputDirPath}\\data");
+                        File.Copy(Assembly.GetExecutingAssembly().Location, $"{OutputDirPath}\\Setup.exe");
+                        if (!ConfigPath.ToLower().Contains("temp.json"))
+                        {
+                            File.Copy(ConfigPath, $"{AppDomain.CurrentDomain.BaseDirectory}temp.json");
+                        }
+                        File.Move($"{AppDomain.CurrentDomain.BaseDirectory}temp.json", $"{OutputDirPath}\\config.json");
+                        break;
+                }
             }
-            // Always remove the temp.json file when export is done
-            File.Delete(ConfigPath);
+            catch(Exception ex)
+            {
+                MessageBox.Show( ex.Message );
+                SettingsManager.Current.DataSource = AppPath.Text;
+                SaveConfig();
+            }
+            // Resave the config with good info
+            SettingsManager.Current.DataSource = AppPath.Text;
+            SaveConfig();
         }
-        
+
         #region Event Handler for Default Mode and Path
         private void DefaultPath_DefaultMode_CheckedChanged(object sender, EventArgs e)
         {
@@ -456,10 +531,31 @@ namespace Setup.Forms
         #endregion
 
         // Save config to temp.json (it can be reload by user to continue editing it after close)
-        private void Save_Click(object sender, EventArgs e) { SaveConfig(); }
-        
+        private void Save_Click(object sender, EventArgs e)
+        {
+            if (ProjectPath == null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+                // Set the initial directory to the user's Documents folder
+                saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Set the default file extension and filter
+                saveFileDialog.DefaultExt = "json";
+                saveFileDialog.Filter = "Config files (*.json)|*.json|All files (*.*)|*.*";
+
+                // Show the dialog and check if the user clicked the save button
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ProjectPath = saveFileDialog.FileName;
+                    SaveAs.Text = "Save";
+                }
+            }
+            SaveConfig();
+        }
+
         // Basicly if data clean is required do it on closing
-        private void PackagerForm_FormClosing(object sender, FormClosingEventArgs e) { if (DataCleanRequired){ Directory.Delete(AppPath.Text, true); } }
+        private void PackagerForm_FormClosing(object sender, FormClosingEventArgs e) { if (DataCleanRequired) { Directory.Delete(AppPath.Text, true); } }
 
         private void RemoveReg_Click(object sender, EventArgs e)
         {
@@ -468,5 +564,85 @@ namespace Setup.Forms
                 RegistryView.Rows.Remove(Row);
             }
         }
+
+        private void addToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            AddScriptForm scriptForm = new AddScriptForm();
+            if (scriptForm.ShowDialog() == DialogResult.OK)
+            {
+                switch (FocusScript)
+                {
+                    default:
+                    case 0:
+                        PostScripts.AddItem(new MaterialListBoxItem { Text = scriptForm.DisplayName.Text, Tag = scriptForm.Scripts.Text });
+                        break;
+                    case 1:
+                        UninstallScripts.AddItem(new MaterialListBoxItem { Text = scriptForm.DisplayName.Text, Tag = scriptForm.Scripts.Text });
+                        break;
+                }
+            }
+        }
+        private void editToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            AddScriptForm scriptForm;
+            switch (FocusScript)
+            {
+                default:
+                case 0:
+                    if (PostScripts.SelectedIndex > -1)
+                    {
+                        var InstallItem = PostScripts.Items[PostScripts.SelectedIndex];
+                        scriptForm = new AddScriptForm(InstallItem.Text, InstallItem.Tag.ToString());
+                        if (scriptForm.ShowDialog() == DialogResult.OK)
+                        {
+                            PostScripts.Items[PostScripts.SelectedIndex] = (new MaterialListBoxItem { Text = scriptForm.DisplayName.Text, Tag = scriptForm.Scripts.Text });
+                        }
+                    }
+                    break;
+                case 1:
+                    if (UninstallScripts.SelectedIndex > -1)
+                    {
+                        var UninstallItem = UninstallScripts.Items[UninstallScripts.SelectedIndex];
+                        scriptForm = new AddScriptForm(UninstallItem.Text, UninstallItem.Tag.ToString());
+                        if (scriptForm.ShowDialog() == DialogResult.OK)
+                        {
+                            UninstallScripts.Items[UninstallScripts.SelectedIndex] = (new MaterialListBoxItem { Text = scriptForm.DisplayName.Text, Tag = scriptForm.Scripts.Text });
+                        }
+                    }
+                    break;
+            }
+        }
+        private void removeToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            switch (FocusScript)
+            {
+                default:
+                case 0:
+                    if (PostScripts.SelectedIndex > -1)
+                        PostScripts.Items.Remove(PostScripts.Items[PostScripts.SelectedIndex]);
+                    break;
+                case 1:
+                    if (UninstallScripts.SelectedIndex > -1)
+                        UninstallScripts.Items.Remove(UninstallScripts.Items[UninstallScripts.SelectedIndex]);
+                    break;
+            }
+        }
+        private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            switch (FocusScript)
+            {
+                default:
+                case 0:
+                    PostScripts.Items.Clear();
+                    break;
+                case 1:
+                    UninstallScripts.Items.Clear();
+                    break;
+            }
+        }
+
+        private void PostScripts_MouseEnter(object sender, EventArgs e) { FocusScript = 0; }
+        private void UninstallScripts_MouseEnter(object sender, EventArgs e) { FocusScript = 1; }
+
     }
 }

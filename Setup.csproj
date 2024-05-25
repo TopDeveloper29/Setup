@@ -81,7 +81,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\PackageManager.cs" />
+    <Compile Include="Class\PowershellManager.cs" />
     <Compile Include="Class\UninstallManager.cs" />
+    <Compile Include="Class\VariableManager.cs" />
+    <Compile Include="Forms\AddScriptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddScriptForm.Designer.cs">
+      <DependentUpon>AddScriptForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PackagerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +103,7 @@
       <DependentUpon>SetupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="App.cs" />
+    <Compile Include="Forms\Theme.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Class\SettingsManager.cs" />
@@ -104,6 +113,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\AddScriptForm.resx">
+      <DependentUpon>AddScriptForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\PackagerForm.resx">
       <DependentUpon>PackagerForm.cs</DependentUpon>
     </EmbeddedResource>

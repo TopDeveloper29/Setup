@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
@@ -22,6 +21,7 @@ namespace Uninstall
             public bool StartUp { get; set; }
             public AppArchitechture Architechture { get; set; }
             public List<RegistryItem> RegistryKeys { get; set; }
+            public List<string> PowershellScripts { get; set; }
         }
         public static string Base64ToString(string bytes)
         {
@@ -47,5 +47,26 @@ namespace Uninstall
         // Reg item location availaible HKLM and HKCU *** To implement HKLU and HKU ***
         public enum RegType { HKLM, HKCU, HKLU, HKU }
     }
+    internal class PowershellManager
+    {
+        public static void Run(string Script)
+        {
+            Process Powershell = new Process();
+            Powershell.StartInfo = new ProcessStartInfo
+            {
+                FileName = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\System32\WindowsPowerShell\v1.0\powershell.exe",
+                Arguments = $"-ExecutionPolicy Bypass -NonInteractive -WindowStyle Hidden -NoProfile -NoLogo -EncodedCommand \"{Encode(Script)}\"",
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Powershell.Start();
+            Powershell.WaitForExit();
+        }
+        private static string Encode(string Scripts)
+        {
+            byte[] bytes = Encoding.Unicode.GetBytes(Scripts);
+            return Convert.ToBase64String(bytes);
+        }
 
+    }
 }

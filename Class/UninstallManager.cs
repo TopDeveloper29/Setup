@@ -1,19 +1,17 @@
-﻿using Newtonsoft.Json.Converters;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Setup.Class
 {
-    internal class UninstallManager
+    internal static class UninstallManager
     {
-        public static Information Current;
+        public static Information Current { get; set; }
 
-        public static void Load(string Name, string installPath, string Desktop, string StartMenu, bool StartUp, AppArchitechture appArchitechture, List<RegistryItem> registryItems)
+        public static void Load(string Name, string installPath, string Desktop, string StartMenu, bool StartUp, AppArchitechture appArchitechture, List<RegistryItem> registryItems,List<string> Scripts)
         {
             Current = new Information();
             Current.Name = Name;
@@ -23,6 +21,7 @@ namespace Setup.Class
             Current.StartUp = StartUp;
             Current.Architechture = appArchitechture;
             Current.RegistryKeys = registryItems;
+            Current.PowershellScripts = Scripts;
         }
         public static string ToBase64()
         {
@@ -49,6 +48,7 @@ namespace Setup.Class
             public bool StartUp { get; set; }
             public AppArchitechture Architechture { get; set; }
             public List<RegistryItem> RegistryKeys { get; set; }
+            public List<string> PowershellScripts { get; set; }
         }
     }
 }

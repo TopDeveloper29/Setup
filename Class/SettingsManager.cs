@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Setup.Class;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,7 +62,6 @@ namespace Setup
                     Current = new Setting();
                     PopulateExeIfPathNull();
                 }
-
             }
         }
 
@@ -163,7 +163,9 @@ namespace Setup
         public CheckBoxConfig DesktopCheckBox { get; set; } = new CheckBoxConfig { Enable = true, Checked = false, Visible = false };
         public CheckBoxConfig StartMenuCheckBox { get; set; } = new CheckBoxConfig { Enable = true, Checked = false, Visible = false };
         public CheckBoxConfig StartUpCheckBox { get; set; } = new CheckBoxConfig { Enable = true, Checked = false, Visible = false };
-        public List<RegistryItem> RegistryKeys { get; set; }
+        public List<RegistryItem> RegistryKeys { get; set; } = new List<RegistryItem>();
+        public Dictionary<string,string> PowershellScripts { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> UninstallScripts { get; set; } = new Dictionary<string, string>();
     }
     
     // Item in setting that basicly represent a Registry key
@@ -174,6 +176,7 @@ namespace Setup
         public string Name { get; set; }
         public string Value { get; set; }
     }
+    
     // Item in setting that bascily reprensen some property of a checkbox that user can configure
     public class CheckBoxConfig
     {

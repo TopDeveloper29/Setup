@@ -84,7 +84,7 @@ namespace Setup
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
         // Create a new self executable setup it basicly required a config file and bin that happen for example when call app with /Setup argument
-        public static void NewSelfExe(string path, string OutputDir = null)
+        public static void NewSelfExe(string path, string OutputDir)
         {
             // Check if file exist and it a json
             if (File.Exists(path) && path.ToLower().Contains(".json"))
@@ -106,15 +106,8 @@ namespace Setup
                         // if the name is temp.json it mean it come from packager then change it to config.json so the setup could load it automatically
                         if (CfgName == "temp.json") { CfgName = "config.json"; }
 
-                        // if an output dit it set it will add it to the oupupt path else it empty so it do not change the path
-                        if (OutputDir == null)
-                        { OutputDir = string.Empty; }
-                        else
-                        { OutputDir = $@"\{OutputDir}\"; }
-
                         // Get the path of the futur new exe file
-                        string NewExePath = $"{AppDomain.CurrentDomain.BaseDirectory}{OutputDir}{Assembly.GetEntryAssembly().Location.Split(new string[] { @"\" }, StringSplitOptions.None).Last().Split('.')[0]} {SettingsManager.Current.Name}.exe";
-                        
+                        string NewExePath = $"{OutputDir}\\{Assembly.GetEntryAssembly().Location.Split(new string[] { @"\" }, StringSplitOptions.None).Last().Split('.')[0]} {SettingsManager.Current.Name}.exe";
                         // if this file already exist delete it
                         if (File.Exists(NewExePath)) { File.Delete(NewExePath); }
 
@@ -183,7 +176,7 @@ namespace Setup
         }
         
         // This will create an setup that will only hold config and icon but as external data source it only use in packager UI
-        public static void NewExe(string path, string OutputDir = null)
+        public static void NewExe(string path, string OutputDir)
         {
             // Refert to NewSelfExe method to aditional comment since NewExe is barely the same process in a more simple way
             if (File.Exists(path) && path.ToLower().Contains(".json"))
@@ -199,14 +192,8 @@ namespace Setup
                     string CfgName = path.Split(new string[] { @"\" }, StringSplitOptions.None).Last();
                     if (CfgName == "temp.json") { CfgName = "config.json"; }
 
-                    // Optionale output dir set string
-                    if (OutputDir == null)
-                    { OutputDir = string.Empty; }
-                    else
-                    { OutputDir = $@"\{OutputDir}\"; }
-
                     // Get the good path for the new exe
-                    string NewExePath = $"{AppDomain.CurrentDomain.BaseDirectory}{OutputDir}{Assembly.GetEntryAssembly().Location.Split(new string[] { @"\" }, StringSplitOptions.None).Last().Split('.')[0]} {SettingsManager.Current.Name}.exe";
+                    string NewExePath = $"{OutputDir}\\{Assembly.GetEntryAssembly().Location.Split(new string[] { @"\" }, StringSplitOptions.None).Last().Split('.')[0]} {SettingsManager.Current.Name}.exe";
                    
                     // if this file alredy exist delete it
                     if (File.Exists(NewExePath)) { File.Delete(NewExePath); }
@@ -223,7 +210,7 @@ namespace Setup
                         }
                         else
                         {
-                            icon = new Icon(SetupManager.ParsePath(SettingsManager.Current.Icon));
+                            icon = new Icon($"{OutputDir}\\{SettingsManager.Current.Icon.Replace(@".\",@"\")}");
                         }
                         if (icon != null)
                         {

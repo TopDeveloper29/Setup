@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Setup.Class;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace Setup
         }
         
         // Parse path (replace all character by full path)
-        public static string ParsePath(string Path) { return Path.Replace(@".\", AppDomain.CurrentDomain.BaseDirectory); }
+        public static string ParsePath(string Path) { return VariableManager.Parse(Path.Replace(@".\", AppDomain.CurrentDomain.BaseDirectory)); }
 
         // Validate if user as admin right
         public static bool IsUserAdministrator()
@@ -81,6 +82,7 @@ namespace Setup
         // Perform the install of application on system
         public static void Install(string Path, bool Desktop, bool StartMenu, bool StartUp)
         {
+            // Rehost as admin if not already
             if (!IsUserAdministrator())
             {
                 Process proc = new Process
@@ -98,6 +100,7 @@ namespace Setup
                 return;
             }
             
+            // base variable for thesetup
             string publicDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
             string programDataStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu) + "\\Programs";
             string publiclnkpath = $@"{publicDesktopPath}\{SettingsManager.Current.Name}.lnk";
@@ -106,6 +109,14 @@ namespace Setup
             string UninstallerName = "Uninstall.exe";
             string CurrentPath = ParsePath(@".\Uninstall.exe");
             string UninstallerPath = $@"{Path}\{UninstallerName}";
+
+            // Set-up environement variable
+            VariableManager.Set(SetupVariable.Name, SettingsManager.Current.Name);
+            VariableManager.Set(SetupVariable.Version, SettingsManager.Current.Version);
+            VariableManager.Set(SetupVariable.InstallPath, Path);
+            VariableManager.Set(SetupVariable.Publisher, SettingsManager.Current.Publisher);
+            VariableManager.Set(SetupVariable.Architecture, SettingsManager.Current.Architecture.ToString());
+            VariableManager.Set(SetupVariable.ExecutableName, SettingsManager.Current.ExecutableName);
 
             // Create directory
             try
@@ -171,9 +182,10 @@ namespace Setup
             catch
             { MessageBox.Show("Fail to register application in registry", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
+            // Copy file
             try
             {
-                // Copy file
+                
                 if (SettingsManager.Current.DataSource.Contains(".bin"))
                 {
                     string DS = ParsePath(SettingsManager.Current.DataSource);
@@ -190,37 +202,19 @@ namespace Setup
             catch
             { MessageBox.Show("Fail to copy application file", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
-            // Create the unistaller with good information
+            // Registry settings
+            List<RegistryItem> ParsedRegistryItems = new List<RegistryItem>();
             try
             {
-                // Poupulate the unistall information object with good information
-                UninstallManager.Load(SettingsManager.Current.Name, Path, publicDesktopPath, programlnkpath, StartUp, SettingsManager.Current.Architecture, SettingsManager.Current.RegistryKeys);
-                // Create the unistaller
-                PackageManager.Base64toFile(Properties.Resources.Base64Uninstall, UninstallerName);
-                System.IO.File.Move(CurrentPath, UninstallerPath);
-
-                // Populate the installer with information in base64
-                string Output = string.Empty;
-                Output += "\n!json|START|json!\n";
-                Output += UninstallManager.ToBase64();
-                Output += "\n!json|END|json!";
-                System.IO.File.AppendAllText(UninstallerPath, Output);
-            }
-            catch
-            {
-                MessageBox.Show("Fail to create and copy application uninstaller", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            try
-            {
-                // Registry settings
+                
                 if (SettingsManager.Current.RegistryKeys != null && SettingsManager.Current.RegistryKeys.Count > 0)
                 {
                     foreach (RegistryItem Item in SettingsManager.Current.RegistryKeys)
                     {
-                        string ItemPath = Item.Path;
-                        string Name = Item.Name;
-                        string Value = Item.Value;
+                        string ItemPath = VariableManager.Parse(Item.Path);
+                        string Name = VariableManager.Parse(Item.Name);
+                        string Value = VariableManager.Parse(Item.Value);
+                        ParsedRegistryItems.Add(new RegistryItem { Name = Name, Path = ItemPath, Value = Value, Type = Item.Type });
 
                         switch (Item.Type)
                         {
@@ -263,7 +257,6 @@ namespace Setup
             {
                 AddShortcut(publiclnkpath, $@"{Path}\{SettingsManager.Current.ExecutableName}", AppIconPath);
             }
-
             if (StartMenu)
             {
                 AddShortcut(programlnkpath, $@"{Path}\{SettingsManager.Current.ExecutableName}", AppIconPath);
@@ -281,6 +274,42 @@ namespace Setup
                 { MessageBox.Show("Fail to register application in start-up", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
 
+            // Run post install scripts
+            foreach (string Scripts in SettingsManager.Current.PowershellScripts.Values)
+            {
+                PowershellManager.Run(VariableManager.Parse(Scripts));
+            }
+
+            // Parse uninstaller script
+            List<string> ParsedScripts = new List<string>();
+            foreach (string Script in SettingsManager.Current.UninstallScripts.Values)
+            {
+                ParsedScripts.Add(VariableManager.Parse(Script));
+            }
+
+
+            // Create the unistaller with good information
+            try
+            {
+                // Poupulate the unistall information object with good information
+                UninstallManager.Load(SettingsManager.Current.Name, Path, publicDesktopPath, programlnkpath, StartUp, SettingsManager.Current.Architecture, ParsedRegistryItems, ParsedScripts);
+                // Create the unistaller
+                PackageManager.Base64toFile(Properties.Resources.Base64Uninstall, UninstallerName);
+                System.IO.File.Move(CurrentPath, UninstallerPath);
+
+                // Populate the installer with information in base64
+                string Output = string.Empty;
+                Output += "\n!json|START|json!\n";
+                Output += UninstallManager.ToBase64();
+                Output += "\n!json|END|json!";
+                System.IO.File.AppendAllText(UninstallerPath, Output);
+            }
+            catch
+            {
+                MessageBox.Show("Fail to create and copy application uninstaller", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Clean temp file
             if (App.CleanUpRequired)
             {
                 if (SetupBinName != null)

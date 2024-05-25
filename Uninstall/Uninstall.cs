@@ -91,12 +91,15 @@ namespace Uninstall
                         RegistryKey key = Registry.LocalMachine.CreateSubKey($"{Reg3264}", true, RegistryOptions.None);
                         key.DeleteSubKeyTree(Current.Name);
 
+                        // Remove desktop icon if exist
                         if (!string.IsNullOrEmpty(Current.DektopIcon) && File.Exists(Current.DektopIcon))
                         {File.Delete(Current.DektopIcon); }
 
+                        // Remove start menu icon if it exist
                         if (!string.IsNullOrEmpty(Current.StartMenuIcon) && File.Exists(Current.StartMenuIcon))
                         { File.Delete(Current.StartMenuIcon); }
 
+                        // Remove application from start-up if it was set
                         if (Current.StartUp)
                         {
                             using (RegistryKey rrkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", writable: true))
@@ -109,35 +112,28 @@ namespace Uninstall
                             foreach (RegistryItem Item in Current.RegistryKeys)
                             {
                                 string ItemPath = Item.Path;
-
                                 switch (Item.Type)
                                 {
                                     case RegType.HKLM:
-                                        using (RegistryKey rkey = Registry.LocalMachine.OpenSubKey(ItemPath, true))
-                                        {
-                                            if (rkey == null)
-                                            {
-                                                Registry.LocalMachine.DeleteSubKey(ItemPath);
-                                            }
-                                        }
+                                        Registry.LocalMachine.DeleteSubKey(ItemPath);
                                         break;
 
                                     case RegType.HKCU:
-                                        using (RegistryKey rkey = Registry.CurrentUser.OpenSubKey(ItemPath, true))
-                                        {
-                                            if (rkey == null)
-                                            {
-                                                Registry.CurrentUser.DeleteSubKey(ItemPath);
-                                            }
-                                        }
+                                        Registry.CurrentUser.DeleteSubKey(ItemPath);
                                         break;
                                 }
                             }
                         }
 
+                        foreach (string Scripts in Current.PowershellScripts)
+                        {
+                            PowershellManager.Run(Scripts);
+                        }
+
+                        // Delete application directory and add key to next logon to clean-up the remaining item
                         Directory.Delete(Current.InstallPath, true);
-                        using (RegistryKey rrkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce", writable: true))
-                        {  rrkey.SetValue(Current.Name, $"\"C:\\WINDOWS\\system32\\cmd.exe\" /C RMDIR /S /Q \"{Current.InstallPath}\"");  }
+                        using (RegistryKey rrkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce", true))
+                        { rrkey.SetValue(Current.Name, $@"""{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\system32\cmd.exe"" /C RMDIR /S /Q ""{Current.InstallPath}""");  }
 
                         Environment.Exit(0);
                     }
